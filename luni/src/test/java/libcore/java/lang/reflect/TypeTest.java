@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 The Android Open Source Project
+ * Copyright (C) 2017 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
-package android.util;
+package libcore.java.lang.reflect;
 
-/**
- */
-public final class MutableLong {
-    public long value;
+import org.junit.Test;
 
-    public MutableLong(long value) {
-        this.value = value;
+import java.lang.reflect.Type;
+
+import static org.junit.Assert.assertEquals;
+
+public class TypeTest {
+
+    @Test
+    public void getTypeName() {
+        Type type = new Type() {
+            @Override
+            public String toString() {
+                return "toString";
+            }
+        };
+        assertEquals("toString", type.getTypeName());
     }
 }

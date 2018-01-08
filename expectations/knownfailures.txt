@@ -1828,24 +1828,6 @@
   ]
 },
 {
-  description: "Revisit this after http://bugs.icu-project.org/trac/ticket/13021 has been resolved",
-  result: EXEC_FAILED,
-  bug: 64092664,
-  name: "libcore.java.text.OldDecimalFormatTestICU#test_positiveExponentSign"
-},
-{
-  description: "Revisit this after http://bugs.icu-project.org/trac/ticket/13309 has been resolved",
-  result: EXEC_FAILED,
-  bug: 64092664,
-  name: "org.apache.harmony.tests.java.text.SimpleDateFormatTest#test_parse_with_spaces"
-},
-{
-  description: "Revisit this after http://bugs.icu-project.org/trac/ticket/13310 has been resolved",
-  result: EXEC_FAILED,
-  bug: 64092664,
-  name: "org.apache.harmony.tests.java.text.DecimalFormatTest#test_formatDouble_withFieldPosition"
-},
-{
   description: "Awaiting fix to reflection code",
   result: EXEC_FAILED,
   bug: 62408076,
@@ -1856,5 +1838,11 @@
   result: EXEC_FAILED,
   bug: 67395816,
   name: "libcore.java.util.zip.DeflateRegressionTest#deterministicOutput"
+},
+{
+  description: "Awaiting fix in fast-path UTF-8 decoder / CharsetDecoder",
+  result: EXEC_FAILED,
+  bug: 69599767,
+  name: "libcore.java.lang.StringTest#test_23831"
 }
 ]

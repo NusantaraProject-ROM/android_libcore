@@ -102,6 +102,11 @@ java_library {
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
     },
+    jacoco: {
+        include_filter: [
+            "java.sql.*",
+        ],
+    },
 
     notice: "ojluni/NOTICE",
 
@@ -146,7 +151,9 @@ java_library {
     libs: ["core-all"],
     system_modules: "core-all-system-modules",
     dxflags: ["--core-library"],
-    dex_preopt: false,
+    dex_preopt: {
+        enabled: false,
+    },
     notice: "ojluni/NOTICE",
     required: [
         "tzdata",
@@ -161,7 +168,9 @@ java_library {
     libs: ["core-all"],
     system_modules: "core-all-system-modules",
     dxflags: ["--core-library"],
-    dex_preopt: false,
+    dex_preopt: {
+        enabled: false,
+    },
     notice: "ojluni/NOTICE",
     required: [
         "tzdata",

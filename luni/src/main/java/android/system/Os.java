@@ -16,8 +16,6 @@
 
 package android.system;
 
-import android.util.MutableInt;
-import android.util.MutableLong;
 import java.io.FileDescriptor;
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
@@ -186,6 +184,17 @@ public final class Os {
      * See <a href="http://man7.org/linux/man-pages/man2/getgid.2.html">getgid(2)</a>.
      */
     public static int getgid() { return Libcore.os.getgid(); }
+
+    /**
+     * See <a href="http://man7.org/linux/man-pages/man2/getgroups.2.html">getgroups(2)</a>.
+     *
+     * <p>Should the number of groups change during the execution of this call, the call may
+     *    return an arbitrary subset. This may be worth reconsidering should this be exposed
+     *    as public API.
+     *
+     * @hide
+     */
+    public static int[] getgroups() throws ErrnoException { return Libcore.os.getgroups(); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man3/getenv.3.html">getenv(3)</a>.
@@ -462,27 +471,6 @@ public final class Os {
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/sendfile.2.html">sendfile(2)</a>.
-     *
-     * @deprecated This method will be removed in a future version of Android. Use
-     *        {@link #sendfile(FileDescriptor, FileDescriptor, Int64Ref, long)} instead.
-     */
-    @Deprecated
-    public static long sendfile(FileDescriptor outFd, FileDescriptor inFd, MutableLong inOffset, long byteCount) throws ErrnoException {
-        if (inOffset == null) {
-            return Libcore.os.sendfile(outFd, inFd, null, byteCount);
-        } else {
-            libcore.util.MutableLong internalInOffset = new libcore.util.MutableLong(
-                    inOffset.value);
-            try {
-                return Libcore.os.sendfile(outFd, inFd, internalInOffset, byteCount);
-            } finally {
-                inOffset.value = internalInOffset.value;
-            }
-        }
-    }
-
-    /**
-     * See <a href="http://man7.org/linux/man-pages/man2/sendfile.2.html">sendfile(2)</a>.
      */
     public static long sendfile(FileDescriptor outFd, FileDescriptor inFd, Int64Ref inOffset, long byteCount) throws ErrnoException {
         if (inOffset == null) {
@@ -532,6 +520,13 @@ public final class Os {
      * See <a href="http://man7.org/linux/man-pages/man2/setgid.2.html">setgid(2)</a>.
      */
     public static void setgid(int gid) throws ErrnoException { Libcore.os.setgid(gid); }
+
+    /**
+     * See <a href="http://man7.org/linux/man-pages/man2/setgroups.2.html">setgroups(2)</a>.
+     *
+     * @hide
+     */
+    public static void setgroups(int[] gids) throws ErrnoException { Libcore.os.setgroups(gids); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/setpgid.2.html">setpgid(2)</a>.
@@ -650,26 +645,6 @@ public final class Os {
      * See <a href="http://man7.org/linux/man-pages/man3/unsetenv.3.html">unsetenv(3)</a>.
      */
     public static void unsetenv(String name) throws ErrnoException { Libcore.os.unsetenv(name); }
-
-    /**
-     * See <a href="http://man7.org/linux/man-pages/man2/waitpid.2.html">waitpid(2)</a>.
-     *
-     * @deprecated This method will be removed in a future version of Android. Use
-     *        {@link #waitpid(int, Int32Ref, int)} instead.
-     */
-    @Deprecated
-    public static int waitpid(int pid, MutableInt status, int options) throws ErrnoException {
-        if (status == null) {
-            return Libcore.os.waitpid(pid, null, options);
-        } else {
-            libcore.util.MutableInt internalStatus = new libcore.util.MutableInt(status.value);
-            try {
-                return Libcore.os.waitpid(pid, internalStatus, options);
-            } finally {
-                status.value = internalStatus.value;
-            }
-        }
-    }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/waitpid.2.html">waitpid(2)</a>.

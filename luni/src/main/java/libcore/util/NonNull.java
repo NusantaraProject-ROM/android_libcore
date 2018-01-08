@@ -16,6 +16,7 @@
 package libcore.util;
 
 import static java.lang.annotation.ElementType.TYPE_USE;
+import static java.lang.annotation.ElementType.TYPE_PARAMETER;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 import java.lang.annotation.Documented;
@@ -31,4 +32,13 @@ import java.lang.annotation.Target;
 @Retention(SOURCE)
 @Target({TYPE_USE})
 public @interface NonNull {
+   /**
+    * Min Android API level (inclusive) to which this annotation is applied.
+    */
+   int from() default Integer.MIN_VALUE;
+
+   /**
+    * Max Android API level to which this annotation is applied.
+    */
+   int to() default Integer.MAX_VALUE;
 }
