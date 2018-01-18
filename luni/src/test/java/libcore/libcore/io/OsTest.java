@@ -54,7 +54,6 @@ import junit.framework.TestCase;
 import libcore.io.IoBridge;
 import libcore.io.IoUtils;
 import libcore.io.Libcore;
-import libcore.util.MutableLong;
 
 import static android.system.OsConstants.*;
 import static libcore.libcore.io.OsTest.SendFileImpl.ANDROID_SYSTEM_OS_INT64_REF;
@@ -839,7 +838,7 @@ public class OsTest extends TestCase {
   public void test_sendfile_errno() throws Exception {
     try {
         // FileDescriptor.out is not open for input, will cause EBADF
-        MutableLong offset = new MutableLong(10);
+        Int64Ref offset = new Int64Ref(10);
         Libcore.os.sendfile(FileDescriptor.out, FileDescriptor.out, offset, 10);
         fail();
     } catch(ErrnoException expected) {
@@ -901,8 +900,7 @@ public class OsTest extends TestCase {
             break;
           }
           case LIBCORE_OS: {
-            libcore.util.MutableLong offset = (startOffset == null) ? null :
-                    new libcore.util.MutableLong(startOffset);
+            Int64Ref offset = (startOffset == null) ? null : new Int64Ref(startOffset);
             libcore.io.Libcore.os.sendfile(outFd, inFd, offset, maxBytes);
             assertEquals(expectedEndOffset, offset == null ? null : offset.value);
             break;
@@ -941,6 +939,22 @@ public class OsTest extends TestCase {
       fail();
     } catch (ErrnoException expected) {
       assertEquals(expectedError, expected.errno);
+    }
+  }
+
+  public void test_odirect() throws Exception {
+    File testFile = createTempFile("test_odirect", "");
+    try {
+      FileDescriptor fd =
+            Libcore.os.open(testFile.toString(), O_WRONLY | O_DIRECT, S_IRUSR | S_IWUSR);
+      assertNotNull(fd);
+      assertTrue(fd.valid());
+      int flags = Libcore.os.fcntlVoid(fd, F_GETFL);
+      assertTrue("Expected file flags to include " + O_DIRECT + ", actual value: " + flags,
+            0 != (flags & O_DIRECT));
+      Libcore.os.close(fd);
+    } finally {
+      testFile.delete();
     }
   }
 
