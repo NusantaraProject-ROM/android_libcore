@@ -104,13 +104,10 @@ java_library {
     },
     jacoco: {
         exclude_filter: [
-            "java.io.*",
-            "java.lang.*",
-            "java.net.*",
-            "java.nio.*",
-            "java.security.*",
-            "java.util.*",
-            "sun.*",
+            "java.lang.**",
+            "java.util.AbstractMap",
+            "java.util.HashMap*", // use * to include all nested classes
+            "java.util.Map",
         ],
     },
 

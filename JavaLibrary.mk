@@ -208,8 +208,12 @@ endif
 # Make the core-ojtests-public library. Excludes any private API tests.
 ifeq ($(LIBCORE_SKIP_TESTS),)
     include $(CLEAR_VARS)
-    # Filter out SerializedLambdaTest because it depends on stub classes and won't actually run.
-    LOCAL_SRC_FILES := $(filter-out %/DeserializeMethodTest.java %/SerializedLambdaTest.java ojluni/src/test/java/util/stream/boot%,$(ojtest_src_files)) # Do not include anything from the boot* directories. Those directories need a custom bootclasspath to run.
+    # Filter out the following:
+    # 1.) DeserializeMethodTest and SerializedLambdaTest, because they depends on stub classes
+    #     and won't actually run, and
+    # 2.) util/stream/boot*. Those directories contain classes in the package java.util.stream;
+    #     excluding them means we don't need LOCAL_PATCH_MODULE := java.base
+    LOCAL_SRC_FILES := $(filter-out %/DeserializeMethodTest.java %/SerializedLambdaTest.java ojluni/src/test/java/util/stream/boot%,$(ojtest_src_files))
     # Include source code as part of JAR
     LOCAL_JAVA_RESOURCE_DIRS := ojluni/src/test/dist $(ojtest_resource_dirs)
     LOCAL_NO_STANDARD_LIBRARIES := true
@@ -280,6 +284,21 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     LOCAL_DX_FLAGS := --core-library
     LOCAL_MODULE_TAGS := optional
     LOCAL_MODULE := core-ojtests-hostdex
+    # ojluni/src/test/java/util/stream/{bootlib,boottest}
+    # contains tests that are in packages from java.base;
+    # By default, OpenJDK 9's javac will only compile such
+    # code if it's declared to also be in java.base at
+    # compile time.
+    #
+    # For now, we use --patch-module to put all sources
+    # and dependencies from this make target into java.base;
+    # other source directories in this make target are in
+    # packages not from java.base; if this becomes a proble
+    # in future, this could be addressed eg. by splitting
+    # boot{lib,test} out into a separate make target,
+    # deleting those tests or moving them to a different
+    # package.
+    LOCAL_PATCH_MODULE := java.base
     include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
 endif
 
@@ -332,3 +351,48 @@ LOCAL_DROIDDOC_OPTIONS := \
 LOCAL_DROIDDOC_CUSTOM_TEMPLATE_DIR:=external/doclava/res/assets/templates-sdk
 
 include $(BUILD_DROIDDOC)
+
+# For unbundled build we'll use the prebuilt jar from prebuilts/sdk.
+ifeq (,$(TARGET_BUILD_APPS)$(filter true,$(TARGET_BUILD_PDK)))
+
+# Generate the stub source files for core.current.stubs
+# =====================================================
+include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES := $(addprefix ../, $(libcore_to_document))
+LOCAL_GENERATED_SOURCES := $(libcore_to_document_generated)
+
+LOCAL_MODULE_CLASS := JAVA_LIBRARIES
+
+LOCAL_DROIDDOC_OPTIONS:= \
+    -stubs $(TARGET_OUT_COMMON_INTERMEDIATES)/JAVA_LIBRARIES/core.current.stubs_intermediates/src \
+    -nodocs \
+
+LOCAL_UNINSTALLABLE_MODULE := true
+LOCAL_MODULE := core-current-stubs-gen
+
+include $(BUILD_DROIDDOC)
+
+# Remember the target that will trigger the code generation.
+core_current_gen_stamp := $(full_target)
+
+# Build the core.current.stubs library
+# ====================================
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := core.current.stubs
+
+LOCAL_SOURCE_FILES_ALL_GENERATED := true
+
+# Make sure to run droiddoc first to generate the stub source files.
+LOCAL_ADDITIONAL_DEPENDENCIES := $(core_current_gen_stamp)
+core_current_gen_stamp :=
+
+LOCAL_NO_STANDARD_LIBRARIES := true
+
+include $(BUILD_STATIC_JAVA_LIBRARY)
+
+# Archive a copy of the classes.jar in SDK build.
+$(call dist-for-goals,sdk win_sdk,$(full_classes_jar):core.current.stubs.jar)
+
+endif  # not TARGET_BUILD_APPS not TARGET_BUILD_PDK=true
