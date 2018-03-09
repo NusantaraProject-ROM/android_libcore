@@ -19,6 +19,7 @@ package libcore.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import libcore.util.CountryTimeZones.TimeZoneMapping;
 
 /**
  * An in-memory representation of country &lt;-&gt; time zone mapping data.
@@ -49,18 +50,20 @@ public final class CountryZonesFinder {
     }
 
     /**
-     * Returns an immutable list of country ISO codes for countries that use the specified time
-     * zone. An exact, case-sensitive match is performed on the zone ID. This method never returns
-     * null.
+     * Returns an immutable list of {@link CountryTimeZones} for countries that use the specified
+     * time zone. An exact, case-sensitive match is performed on the zone ID. This method never
+     * returns null.
      */
-    public List<String> lookupCountryCodesForZoneId(String zoneId) {
-        List<String> isoCodes = new ArrayList<>(2);
+    public List<CountryTimeZones> lookupCountryTimeZonesForZoneId(String zoneId) {
+        List<CountryTimeZones> matches = new ArrayList<>(2);
         for (CountryTimeZones countryTimeZones : countryTimeZonesList) {
-            if (countryTimeZones.getTimeZoneIds().contains(zoneId)) {
-                isoCodes.add(countryTimeZones.getCountryIso());
+            boolean match = TimeZoneMapping.containsTimeZoneId(
+                    countryTimeZones.getTimeZoneMappings(), zoneId);
+            if (match) {
+                matches.add(countryTimeZones);
             }
         }
-        return Collections.unmodifiableList(isoCodes);
+        return Collections.unmodifiableList(matches);
     }
 
     /**
