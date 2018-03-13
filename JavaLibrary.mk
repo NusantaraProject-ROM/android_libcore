@@ -137,6 +137,7 @@ LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_MODULE := filesystemstest
 LOCAL_JAVA_LIBRARIES := core-oj core-libart
 LOCAL_DEX_PREOPT := false
+LOCAL_ERROR_PRONE_FLAGS := -Xep:MissingOverride:OFF
 include $(BUILD_JAVA_LIBRARY)
 
 filesystemstest_jar := $(intermediates)/$(LOCAL_MODULE).jar
@@ -151,6 +152,7 @@ LOCAL_MODULE := parameter-metadata-test
 LOCAL_JAVA_LIBRARIES := core-oj core-libart
 LOCAL_DEX_PREOPT := false
 LOCAL_JAVACFLAGS := -parameters
+LOCAL_ERROR_PRONE_FLAGS := -Xep:MissingOverride:OFF
 include $(BUILD_JAVA_LIBRARY)
 
 parameter_metadata_test_jar := $(intermediates)/$(LOCAL_MODULE).jar
@@ -183,7 +185,10 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
 	tzdata-testing
 LOCAL_JAVACFLAGS := $(local_javac_flags)
 LOCAL_JACK_FLAGS := $(local_jack_flags)
-LOCAL_ERROR_PRONE_FLAGS := -Xep:TryFailThrowable:ERROR -Xep:ComparisonOutOfRange:ERROR
+LOCAL_ERROR_PRONE_FLAGS := \
+        -Xep:TryFailThrowable:ERROR \
+        -Xep:ComparisonOutOfRange:ERROR \
+        -Xep:MissingOverride:OFF
 LOCAL_MODULE := core-tests
 include $(BUILD_STATIC_JAVA_LIBRARY)
 endif
@@ -202,6 +207,7 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     LOCAL_MODULE := core-ojtests
     # jack bug workaround: int[] java.util.stream.StatefulTestOp.-getjava-util-stream-StreamShapeSwitchesValues() is a private synthetic method in an interface which causes a hard verifier error
     LOCAL_DEX_PREOPT := false # disable AOT preverification which breaks the build. it will still throw VerifyError at runtime.
+    LOCAL_ERROR_PRONE_FLAGS := -Xep:MissingOverride:OFF
     include $(BUILD_JAVA_LIBRARY)
 endif
 
@@ -230,6 +236,7 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     LOCAL_MODULE := core-ojtests-public
     # jack bug workaround: int[] java.util.stream.StatefulTestOp.-getjava-util-stream-StreamShapeSwitchesValues() is a private synthetic method in an interface which causes a hard verifier error
     LOCAL_DEX_PREOPT := false # disable AOT preverification which breaks the build. it will still throw VerifyError at runtime.
+    LOCAL_ERROR_PRONE_FLAGS := -Xep:MissingOverride:OFF
     include $(BUILD_JAVA_LIBRARY)
 endif
 
@@ -266,6 +273,7 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     LOCAL_JAVACFLAGS := $(local_javac_flags)
     LOCAL_MODULE_TAGS := optional
     LOCAL_MODULE := core-tests-hostdex
+    LOCAL_ERROR_PRONE_FLAGS := -Xep:MissingOverride:OFF
     include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
 endif
 
@@ -299,6 +307,7 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     # deleting those tests or moving them to a different
     # package.
     LOCAL_PATCH_MODULE := java.base
+    LOCAL_ERROR_PRONE_FLAGS := -Xep:MissingOverride:OFF
     include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
 endif
 
@@ -369,6 +378,7 @@ LOCAL_DROIDDOC_OPTIONS:= \
     -nodocs \
 
 LOCAL_UNINSTALLABLE_MODULE := true
+LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_MODULE := core-current-stubs-gen
 
 include $(BUILD_DROIDDOC)
@@ -388,8 +398,11 @@ LOCAL_SOURCE_FILES_ALL_GENERATED := true
 LOCAL_ADDITIONAL_DEPENDENCIES := $(core_current_gen_stamp)
 core_current_gen_stamp :=
 
+# Because javac refuses to compile these stubs with --system=none, ( http://b/72206056#comment31 ),
+# just patch them into java.base at compile time.
+LOCAL_PATCH_MODULE := java.base
 LOCAL_NO_STANDARD_LIBRARIES := true
-
+LOCAL_ERROR_PRONE_FLAGS := -Xep:MissingOverride:OFF
 include $(BUILD_STATIC_JAVA_LIBRARY)
 
 # Archive a copy of the classes.jar in SDK build.
