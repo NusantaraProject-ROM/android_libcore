@@ -272,9 +272,18 @@ public final class VMRuntime {
      *
      * @param signaturePrefixes
      *         A list of signature prefixes. Each item in the list is a prefix match on the type
-     *         signature of a blacklisted API. Access is permitted to any matching API.
+     *         signature of a blacklisted API. All matching APIs are treated as if they were on
+     *         the whitelist: access permitted, and no logging..
      */
     public native void setHiddenApiExemptions(String[] signaturePrefixes);
+
+    /**
+     * Sets the log sampling rate of hidden API accesses written to the event log.
+     *
+     * @param rate Proportion of hidden API accesses that will be logged; an integer between
+     *                0 and 0x10000 inclusive.
+     */
+    public native void setHiddenApiAccessLogSamplingRate(int rate);
 
     /**
      * Returns an array allocated in an area of the Java heap where it will never be moved.
