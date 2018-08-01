@@ -34,8 +34,8 @@ import libcore.io.SizeOf;
 import sun.misc.Cleaner;
 import sun.nio.ch.DirectBuffer;
 
-/** @hide */
 // Not final because it is extended in tests.
+/** @hide */
 public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
 
     /**
@@ -247,6 +247,14 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
     private ByteBuffer put(long a, byte x) {
         Memory.pokeByte(a, x);
         return this;
+    }
+
+    @Override
+    public ByteBuffer put(ByteBuffer src) {
+        if (!memoryRef.isAccessible) {
+            throw new IllegalStateException("buffer is inaccessible");
+        }
+        return super.put(src);
     }
 
     @Override

@@ -55,6 +55,7 @@ java_defaults {
     errorprone: {
         javacflags: [
             "-Xep:MissingOverride:OFF",  // Ignore missing @Override.
+            "-Xep:ConstantOverflow:WARN",  // Known constant overflow in SplittableRandom
         ],
     },
 }
@@ -98,6 +99,7 @@ java_system_modules {
 java_library {
     name: "core-oj",
     defaults: ["libcore_java_defaults"],
+    installable: true,
     hostdex: true,
 
     srcs: [":openjdk_java_files"],
@@ -137,6 +139,7 @@ java_library {
 java_library {
     name: "core-libart",
     defaults: ["libcore_java_defaults"],
+    installable: true,
     hostdex: true,
 
     srcs: [
@@ -168,6 +171,7 @@ java_library {
 // but these will not be stripped. See b/24535627.
 java_library {
     name: "core-oj-testdex",
+    installable: true,
     static_libs: ["core-oj"],
     no_standard_libs: true,
     libs: ["core-all"],
@@ -185,6 +189,7 @@ java_library {
 
 java_library {
     name: "core-libart-testdex",
+    installable: true,
     static_libs: ["core-libart"],
     no_standard_libs: true,
     libs: ["core-all"],
@@ -297,6 +302,21 @@ genrule {
     ],
 }
 
+//
+// Local droiddoc for faster libcore testing
+//
+// Run with:
+//     mm -j32 core-docs
+//
+// Main output:
+//     ../out/soong/.intermediates/libcore/core-docs/android_common/docs/out/reference/packages.html
+//
+// All text for proofreading (or running tools over):
+//     ../out/soong/.intermediates/libcore/core-docs/android_common/core-docs-proofread.txt
+//
+// TODO list of missing javadoc, etc:
+//     ../out/soong/.intermediates/libcore/core-docs/android_common/docs/out/core-docs-todo.html
+//
 droiddoc {
     name: "core-docs",
     srcs: [
@@ -318,4 +338,45 @@ droiddoc {
     proofread_file: "core-docs-proofread.txt",
     todo_file: "core-docs-todo.html",
     args: "-offlinemode -title \"libcore\"",
+}
+
+filegroup {
+    name: "known-oj-tags",
+    srcs: [
+        "known_oj_tags.txt",
+    ],
+}
+
+droiddoc {
+    name: "core-current-stubs-gen-docs",
+    srcs: [
+        ":openjdk_javadoc_files",
+        ":non_openjdk_javadoc_files",
+        ":android_icu4j_src_files_for_docs",
+        ":gen-ojluni-jaif-annotated-srcs",
+    ],
+    exclude_srcs: [
+        ":annotated_ojluni_files",
+    ],
+    custom_template: "droiddoc-templates-sdk",
+    installable: false,
+    no_framework_libs: true,
+    args: "-nodocs",
+}
+
+java_library_static {
+    name: "core.current.stubs",
+    srcs: [
+        ":core-current-stubs-gen-docs",
+    ],
+    errorprone: {
+        javacflags: [
+            "-Xep:MissingOverride:OFF",
+        ],
+    },
+    openjdk9: {
+        javacflags: ["--patch-module=java.base=."],
+    },
+    no_standard_libs: true,
+    system_modules: "none",
 }

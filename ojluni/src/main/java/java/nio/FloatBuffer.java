@@ -108,7 +108,8 @@ public abstract class FloatBuffer
     FloatBuffer(int mark, int pos, int lim, int cap,   // package-private
                  float[] hb, int offset)
     {
-        super(mark, pos, lim, cap, 2);
+        // Android-added: elementSizeShift parameter (log2 of element size).
+        super(mark, pos, lim, cap, 2 /* elementSizeShift */);
         this.hb = hb;
         this.offset = offset;
     }
@@ -464,6 +465,8 @@ public abstract class FloatBuffer
     public FloatBuffer put(FloatBuffer src) {
         if (src == this)
             throw new IllegalArgumentException();
+        if (isReadOnly())
+            throw new ReadOnlyBufferException();
         int n = src.remaining();
         if (n > remaining())
             throw new BufferOverflowException();

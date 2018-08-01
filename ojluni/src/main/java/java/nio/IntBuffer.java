@@ -109,7 +109,8 @@ public abstract class IntBuffer
     IntBuffer(int mark, int pos, int lim, int cap,   // package-private
                  int[] hb, int offset)
     {
-        super(mark, pos, lim, cap, 2);
+        // Android-added: elementSizeShift parameter (log2 of element size).
+        super(mark, pos, lim, cap, 2 /* elementSizeShift */);
         this.hb = hb;
         this.offset = offset;
     }
@@ -465,6 +466,8 @@ public abstract class IntBuffer
     public IntBuffer put(IntBuffer src) {
         if (src == this)
             throw new IllegalArgumentException();
+        if (isReadOnly())
+            throw new ReadOnlyBufferException();
         int n = src.remaining();
         if (n > remaining())
             throw new BufferOverflowException();

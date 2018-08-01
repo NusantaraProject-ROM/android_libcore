@@ -108,7 +108,8 @@ public abstract class LongBuffer
     LongBuffer(int mark, int pos, int lim, int cap,   // package-private
                  long[] hb, int offset)
     {
-        super(mark, pos, lim, cap, 3);
+        // Android-added: elementSizeShift parameter (log2 of element size).
+        super(mark, pos, lim, cap, 3 /* elementSizeShift */);
         this.hb = hb;
         this.offset = offset;
     }
@@ -464,6 +465,8 @@ public abstract class LongBuffer
     public LongBuffer put(LongBuffer src) {
         if (src == this)
             throw new IllegalArgumentException();
+        if (isReadOnly())
+            throw new ReadOnlyBufferException();
         int n = src.remaining();
         if (n > remaining())
             throw new BufferOverflowException();

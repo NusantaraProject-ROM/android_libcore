@@ -108,7 +108,8 @@ public abstract class ShortBuffer
     ShortBuffer(int mark, int pos, int lim, int cap,   // package-private
                  short[] hb, int offset)
     {
-        super(mark, pos, lim, cap, 1);
+        // Android-added: elementSizeShift parameter (log2 of element size).
+        super(mark, pos, lim, cap, 1 /* elementSizeShift */);
         this.hb = hb;
         this.offset = offset;
     }
@@ -464,6 +465,8 @@ public abstract class ShortBuffer
     public ShortBuffer put(ShortBuffer src) {
         if (src == this)
             throw new IllegalArgumentException();
+        if (isReadOnly())
+            throw new ReadOnlyBufferException();
         int n = src.remaining();
         if (n > remaining())
             throw new BufferOverflowException();

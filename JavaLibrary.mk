@@ -205,8 +205,6 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     LOCAL_DX_FLAGS := --core-library
     LOCAL_MODULE_TAGS := optional
     LOCAL_MODULE := core-ojtests
-    # jack bug workaround: int[] java.util.stream.StatefulTestOp.-getjava-util-stream-StreamShapeSwitchesValues() is a private synthetic method in an interface which causes a hard verifier error
-    LOCAL_DEX_PREOPT := false # disable AOT preverification which breaks the build. it will still throw VerifyError at runtime.
     LOCAL_ERROR_PRONE_FLAGS := -Xep:MissingOverride:OFF
     include $(BUILD_JAVA_LIBRARY)
 endif
@@ -234,9 +232,9 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     LOCAL_DX_FLAGS := --core-library
     LOCAL_MODULE_TAGS := optional
     LOCAL_MODULE := core-ojtests-public
-    # jack bug workaround: int[] java.util.stream.StatefulTestOp.-getjava-util-stream-StreamShapeSwitchesValues() is a private synthetic method in an interface which causes a hard verifier error
-    LOCAL_DEX_PREOPT := false # disable AOT preverification which breaks the build. it will still throw VerifyError at runtime.
     LOCAL_ERROR_PRONE_FLAGS := -Xep:MissingOverride:OFF
+    # Some tests have known overflow. To not have to add annotations, turn off the overflow check.
+    LOCAL_ERROR_PRONE_FLAGS += -Xep:ConstantOverflow:OFF
     include $(BUILD_JAVA_LIBRARY)
 endif
 
@@ -313,99 +311,6 @@ endif
 
 endif # HOST_OS == linux
 
-#
-# Local droiddoc for faster libcore testing
-#
-#
-# Run with:
-#     mm -j32 libcore-docs
-#
-# Main output:
-#     ../out/target/common/docs/libcore/reference/packages.html
-#
-# All text for proofreading (or running tools over):
-#     ../out/target/common/docs/libcore-proofread.txt
-#
-# TODO list of missing javadoc, etc:
-#     ../out/target/common/docs/libcore-docs-todo.html
-#
-# Rerun:
-#     rm -rf ../out/target/common/docs/libcore-timestamp && mm -j32 libcore-docs
-#
-include $(CLEAR_VARS)
-
-# for shared defintion of libcore_to_document
-include $(LOCAL_PATH)/Docs.mk
-
-# The libcore_to_document paths are relative to $(TOPDIR). We are in libcore so we must prepend
-# ../ to make LOCAL_SRC_FILES relative to $(LOCAL_PATH).
-LOCAL_SRC_FILES := $(addprefix ../, $(libcore_to_document))
-LOCAL_INTERMEDIATE_SOURCES := \
-    $(patsubst $(TARGET_OUT_COMMON_INTERMEDIATES)/%,%,$(libcore_to_document_generated))
-LOCAL_ADDITIONAL_DEPENDENCIES := $(libcore_to_document_generated)
-# rerun doc generation without recompiling the java
-LOCAL_JAVACFLAGS := $(local_javac_flags)
-LOCAL_MODULE_CLASS:=JAVA_LIBRARIES
-
-LOCAL_MODULE := libcore
-
-LOCAL_DROIDDOC_OPTIONS := \
- -offlinemode \
- -title "libcore" \
- -proofread $(OUT_DOCS)/$(LOCAL_MODULE)-proofread.txt \
- -todo ../$(LOCAL_MODULE)-docs-todo.html \
- -knowntags ./libcore/known_oj_tags.txt \
- -hdf android.whichdoc offline
-
-LOCAL_DROIDDOC_CUSTOM_TEMPLATE_DIR:=external/doclava/res/assets/templates-sdk
-
-include $(BUILD_DROIDDOC)
-
-# For unbundled build we'll use the prebuilt jar from prebuilts/sdk.
-ifeq (,$(TARGET_BUILD_APPS)$(filter true,$(TARGET_BUILD_PDK)))
-
-# Generate the stub source files for core.current.stubs
-# =====================================================
-include $(CLEAR_VARS)
-
-LOCAL_SRC_FILES := $(addprefix ../, $(libcore_to_document))
-LOCAL_GENERATED_SOURCES := $(libcore_to_document_generated)
-
-LOCAL_MODULE_CLASS := JAVA_LIBRARIES
-
-LOCAL_DROIDDOC_OPTIONS:= \
-    -stubs $(TARGET_OUT_COMMON_INTERMEDIATES)/JAVA_LIBRARIES/core.current.stubs_intermediates/src \
-    -nodocs \
-
-LOCAL_UNINSTALLABLE_MODULE := true
-LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_MODULE := core-current-stubs-gen
-
-include $(BUILD_DROIDDOC)
-
-# Remember the target that will trigger the code generation.
-core_current_gen_stamp := $(full_target)
-
-# Build the core.current.stubs library
-# ====================================
-include $(CLEAR_VARS)
-
-LOCAL_MODULE := core.current.stubs
-
-LOCAL_SOURCE_FILES_ALL_GENERATED := true
-
-# Make sure to run droiddoc first to generate the stub source files.
-LOCAL_ADDITIONAL_DEPENDENCIES := $(core_current_gen_stamp)
-core_current_gen_stamp :=
-
-# Because javac refuses to compile these stubs with --system=none, ( http://b/72206056#comment31 ),
-# just patch them into java.base at compile time.
-LOCAL_PATCH_MODULE := java.base
-LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_ERROR_PRONE_FLAGS := -Xep:MissingOverride:OFF
-include $(BUILD_STATIC_JAVA_LIBRARY)
-
 # Archive a copy of the classes.jar in SDK build.
+full_classes_jar := $(call intermediates-dir-for,JAVA_LIBRARIES,core.current.stubs,,COMMON)/classes.jar
 $(call dist-for-goals,sdk win_sdk,$(full_classes_jar):core.current.stubs.jar)
-
-endif  # not TARGET_BUILD_APPS not TARGET_BUILD_PDK=true

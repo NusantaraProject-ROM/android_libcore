@@ -108,7 +108,8 @@ public abstract class DoubleBuffer
     DoubleBuffer(int mark, int pos, int lim, int cap,   // package-private
                  double[] hb, int offset)
     {
-        super(mark, pos, lim, cap, 3);
+        // Android-added: elementSizeShift parameter (log2 of element size).
+        super(mark, pos, lim, cap, 3 /* elementSizeShift */);
         this.hb = hb;
         this.offset = offset;
     }
@@ -464,6 +465,8 @@ public abstract class DoubleBuffer
     public DoubleBuffer put(DoubleBuffer src) {
         if (src == this)
             throw new IllegalArgumentException();
+        if (isReadOnly())
+            throw new ReadOnlyBufferException();
         int n = src.remaining();
         if (n > remaining())
             throw new BufferOverflowException();
@@ -784,9 +787,7 @@ public abstract class DoubleBuffer
     public int compareTo(DoubleBuffer that) {
         int n = this.position() + Math.min(this.remaining(), that.remaining());
         for (int i = this.position(), j = that.position(); i < n; i++, j++) {
-            // Android-changed: Call through to Double.compare() instead of
-            // duplicating code pointlessly.
-            int cmp = Double.compare(this.get(i), that.get(j));
+            int cmp = compare(this.get(i), that.get(j));
             if (cmp != 0)
                 return cmp;
         }
