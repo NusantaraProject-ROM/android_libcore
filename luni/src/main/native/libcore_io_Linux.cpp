@@ -49,8 +49,13 @@
 
 #include <memory>
 
+#if defined(__BIONIC__)
+#include <android/fdsan.h>
+#endif
+
 #include <android-base/file.h>
 #include <android-base/logging.h>
+#include <android-base/macros.h>
 #include <android-base/strings.h>
 #include <log/log.h>
 #include <nativehelper/AsynchronousCloseMonitor.h>
@@ -1086,13 +1091,36 @@ static void Linux_chown(JNIEnv* env, jobject, jstring javaPath, jint uid, jint g
 static void Linux_close(JNIEnv* env, jobject, jobject javaFd) {
     // Get the FileDescriptor's 'fd' field and clear it.
     // We need to do this before we can throw an IOException (http://b/3222087).
+    if (javaFd == nullptr) {
+        jniThrowNullPointerException(env, "null fd");
+        return;
+    }
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     jniSetFileDescriptorOfFD(env, javaFd, -1);
 
+#if defined(__BIONIC__)
+    jlong ownerId = jniGetOwnerIdFromFileDescriptor(env, javaFd);
+
+    // Close with bionic's fd ownership tracking (which returns 0 in the case of EINTR).
+    throwIfMinusOne(env, "close", android_fdsan_close_with_tag(fd, ownerId));
+#else
     // Even if close(2) fails with EINTR, the fd will have been closed.
     // Using TEMP_FAILURE_RETRY will either lead to EBADF or closing someone else's fd.
     // http://lkml.indiana.edu/hypermail/linux/kernel/0509.1/0877.html
     throwIfMinusOne(env, "close", close(fd));
+#endif
+}
+
+static void Linux_android_fdsan_exchange_owner_tag(JNIEnv* env, jclass,
+                                                   jobject javaFd,
+                                                   jlong expectedOwnerId,
+                                                   jlong newOwnerId) {
+#if defined(__BIONIC__)
+    int fd = jniGetFDFromFileDescriptor(env, javaFd);
+    android_fdsan_exchange_owner_tag(fd, expectedOwnerId, newOwnerId);
+#else
+    UNUSED(env, javaFd, expectedOwnerId, newOwnerId);
+#endif
 }
 
 static void Linux_connect(JNIEnv* env, jobject, jobject javaFd, jobject javaAddress, jint port) {
@@ -2297,10 +2325,18 @@ static jobject Linux_socket(JNIEnv* env, jobject, jint domain, jint type, jint p
 
 static void Linux_socketpair(JNIEnv* env, jobject, jint domain, jint type, jint protocol, jobject javaFd1, jobject javaFd2) {
     int fds[2];
-    int rc = throwIfMinusOne(env, "socketpair", TEMP_FAILURE_RETRY(socketpair(domain, type, protocol, fds)));
-    if (rc != -1) {
-        jniSetFileDescriptorOfFD(env, javaFd1, fds[0]);
-        jniSetFileDescriptorOfFD(env, javaFd2, fds[1]);
+    // Fail fast to avoid leaking file descriptors if either FileDescriptor is null.
+    if (javaFd1 == nullptr) {
+        jniThrowNullPointerException(env, "null fd1");
+    } else if (javaFd2 == nullptr) {
+        jniThrowNullPointerException(env, "null fd2");
+    } else {
+        int rc = throwIfMinusOne(env, "socketpair",
+                TEMP_FAILURE_RETRY(socketpair(domain, type, protocol, fds)));
+        if (rc != -1) {
+            jniSetFileDescriptorOfFD(env, javaFd1, fds[0]);
+            jniSetFileDescriptorOfFD(env, javaFd2, fds[1]);
+        }
     }
 }
 
@@ -2467,6 +2503,7 @@ static jint Linux_writev(JNIEnv* env, jobject, jobject javaFd, jobjectArray buff
 static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Linux, accept, "(Ljava/io/FileDescriptor;Ljava/net/SocketAddress;)Ljava/io/FileDescriptor;"),
     NATIVE_METHOD(Linux, access, "(Ljava/lang/String;I)Z"),
+    NATIVE_METHOD(Linux, android_fdsan_exchange_owner_tag, "(Ljava/io/FileDescriptor;JJ)V"),
     NATIVE_METHOD(Linux, android_getaddrinfo, "(Ljava/lang/String;Landroid/system/StructAddrinfo;I)[Ljava/net/InetAddress;"),
     NATIVE_METHOD(Linux, bind, "(Ljava/io/FileDescriptor;Ljava/net/InetAddress;I)V"),
     NATIVE_METHOD_OVERLOAD(Linux, bind, "(Ljava/io/FileDescriptor;Ljava/net/SocketAddress;)V", SocketAddress),
