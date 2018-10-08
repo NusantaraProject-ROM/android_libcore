@@ -31,6 +31,9 @@ import java.util.Random;
 import libcore.util.NonNull;
 import static android.system.OsConstants.*;
 
+/** @hide */
+@libcore.api.CorePlatformApi
+@libcore.api.IntraCoreApi
 public final class IoUtils {
     private IoUtils() {
     }
@@ -48,6 +51,7 @@ public final class IoUtils {
      * @param fd FileDescriptor to take ownership from, must be non-null.
      * @throws NullPointerException if fd is null
      */
+    @libcore.api.CorePlatformApi
     public static int acquireRawFd(@NonNull FileDescriptor fd) {
         Objects.requireNonNull(fd);
 
@@ -119,6 +123,7 @@ public final class IoUtils {
      * @throws NullPointerException if fd or owner are null
      * @throws IllegalStateException if fd is already owned
      */
+    @libcore.api.CorePlatformApi
     public static void setFdOwner(@NonNull FileDescriptor fd, @NonNull Object owner) {
         Objects.requireNonNull(fd);
         Objects.requireNonNull(owner);
@@ -140,6 +145,7 @@ public final class IoUtils {
      * Calls close(2) on 'fd'. Also resets the internal int to -1. Does nothing if 'fd' is null
      * or invalid.
      */
+    @libcore.api.CorePlatformApi
     public static void close(FileDescriptor fd) throws IOException {
         IoBridge.closeAndSignalBlockedThreads(fd);
     }
@@ -147,6 +153,8 @@ public final class IoUtils {
     /**
      * Closes 'closeable', ignoring any checked exceptions. Does nothing if 'closeable' is null.
      */
+    @libcore.api.CorePlatformApi
+    @libcore.api.IntraCoreApi
     public static void closeQuietly(AutoCloseable closeable) {
         if (closeable != null) {
             try {
@@ -161,6 +169,7 @@ public final class IoUtils {
     /**
      * Closes 'fd', ignoring any exceptions. Does nothing if 'fd' is null or invalid.
      */
+    @libcore.api.CorePlatformApi
     public static void closeQuietly(FileDescriptor fd) {
         try {
             IoUtils.close(fd);
@@ -171,6 +180,7 @@ public final class IoUtils {
     /**
      * Closes 'socket', ignoring any exceptions. Does nothing if 'socket' is null.
      */
+    @libcore.api.CorePlatformApi
     public static void closeQuietly(Socket socket) {
         if (socket != null) {
             try {
@@ -183,6 +193,7 @@ public final class IoUtils {
     /**
      * Sets 'fd' to be blocking or non-blocking, according to the state of 'blocking'.
      */
+    @libcore.api.CorePlatformApi
     public static void setBlocking(FileDescriptor fd, boolean blocking) throws IOException {
         try {
             int flags = Libcore.os.fcntlVoid(fd, F_GETFL);
@@ -200,6 +211,7 @@ public final class IoUtils {
     /**
      * Returns the contents of 'path' as a byte array.
      */
+    @libcore.api.CorePlatformApi
     public static byte[] readFileAsByteArray(String absolutePath) throws IOException {
         return new FileReader(absolutePath).readFully().toByteArray();
     }
@@ -207,6 +219,7 @@ public final class IoUtils {
     /**
      * Returns the contents of 'path' as a string. The contents are assumed to be UTF-8.
      */
+    @libcore.api.CorePlatformApi
     public static String readFileAsString(String absolutePath) throws IOException {
         return new FileReader(absolutePath).readFully().toString(StandardCharsets.UTF_8);
     }

@@ -16,7 +16,6 @@
 
 package libcore.mmodule.simple;
 
-import libcore.mmodule.IntraCoreMModuleApi;
 import libcore.mmodule.libart.DemoLibartClass;
 
 /**
@@ -27,7 +26,7 @@ import libcore.mmodule.libart.DemoLibartClass;
  *
  * @hide
  */
-@IntraCoreMModuleApi
+@libcore.api.IntraCoreApi
 public class DemoSimpleClass {
 
     private DemoSimpleClass() {}
@@ -35,20 +34,16 @@ public class DemoSimpleClass {
     /**
      * A simple method that has no native or data file dependencies but is part of the simple
      * mmodule's API contract.
-     *
-     * @hide
      */
-    @IntraCoreMModuleApi
+    @libcore.api.IntraCoreApi
     public static String simpleMethod() {
         return "Hello World";
     }
 
     /**
      * A method that depends on another part of the core libraries to work.
-     *
-     * @hide
      */
-    @IntraCoreMModuleApi // Exposed for tests
+    @libcore.api.IntraCoreApi // Exposed for tests
     public static String intraCoreDependencyMethod() {
         // Delegate to core-libart code to implement the method.
         return DemoLibartClass.simpleMethod();
@@ -56,8 +51,6 @@ public class DemoSimpleClass {
 
     /**
      * A method that is public but not part of the simple mmodule's API contract.
-     *
-     * @hide
      */
     public static String hiddenMethod() {
         return "Hello World";

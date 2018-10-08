@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package libcore.mmodule;
+package libcore.api;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.CONSTRUCTOR;
@@ -29,13 +29,17 @@ import java.lang.annotation.Target;
 /**
  * Indicates an API is part of a contract within the "core" set of libraries, some of which may
  * be mmodules.
- * <p>
- * This annotation should only appear on API that is already marked <pre>@hide</pre>.
+ *
+ * <p>This annotation should only appear on either (a) classes that are hidden by <pre>@hide</pre>
+ * javadoc tags or equivalent annotations, or (b) members of such classes. It is for use with
+ * metalava's {@code --show-single-annotation} option and so must be applied at the class level and
+ * applied again each member that is to be made part of the API. Members that are not part of the
+ * API do not have to be explicitly hidden.
  *
  * @hide
  */
-@IntraCoreMModuleApi // @IntraCoreMModuleApi is itself part of the intra-core API
+@IntraCoreApi // @IntraCoreApi is itself part of the intra-core API
 @Target({TYPE, FIELD, METHOD, CONSTRUCTOR, ANNOTATION_TYPE})
 @Retention(RetentionPolicy.SOURCE)
-public @interface IntraCoreMModuleApi {
+public @interface IntraCoreApi {
 }
