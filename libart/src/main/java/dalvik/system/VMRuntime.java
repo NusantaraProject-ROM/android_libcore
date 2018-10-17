@@ -29,6 +29,7 @@ import java.util.function.Consumer;
  *
  * @hide
  */
+@libcore.api.CorePlatformApi
 public final class VMRuntime {
 
     /**
@@ -58,6 +59,7 @@ public final class VMRuntime {
      * any released version in {@code android.os.Build.VERSION_CODES}.
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static final int SDK_VERSION_CUR_DEVELOPMENT = 10000;
 
     private static Consumer<String> nonSdkApiUsageConsumer = null;
@@ -76,6 +78,7 @@ public final class VMRuntime {
      *
      * @return the runtime object
      */
+    @libcore.api.CorePlatformApi
     public static VMRuntime getRuntime() {
         return THE_ONE;
     }
@@ -104,22 +107,26 @@ public final class VMRuntime {
     /**
      * Returns the name of the shared library providing the VM implementation.
      */
+    @libcore.api.CorePlatformApi
     public native String vmLibrary();
 
     /**
      * Returns the VM's instruction set.
      */
+    @libcore.api.CorePlatformApi
     public native String vmInstructionSet();
 
     /**
      * Returns whether the VM is running in 64-bit mode.
      */
+    @libcore.api.CorePlatformApi
     @FastNative
     public native boolean is64Bit();
 
     /**
      * Returns whether the VM is running with JNI checking enabled.
      */
+    @libcore.api.CorePlatformApi
     @FastNative
     public native boolean isCheckJniEnabled();
 
@@ -131,6 +138,7 @@ public final class VMRuntime {
      *
      * @return the current ideal heap utilization
      */
+    @libcore.api.CorePlatformApi
     public native float getTargetHeapUtilization();
 
     /**
@@ -146,6 +154,7 @@ public final class VMRuntime {
      * @return the previous ideal heap utilization
      * @throws IllegalArgumentException if newTarget is &lt;= 0.0 or &gt;= 1.0
      */
+    @libcore.api.CorePlatformApi
     public float setTargetHeapUtilization(float newTarget) {
         if (newTarget <= 0.0f || newTarget >= 1.0f) {
             throw new IllegalArgumentException(newTarget +
@@ -167,6 +176,7 @@ public final class VMRuntime {
      * app starts to run, because it may change the VM's behavior in
      * dangerous ways. Defaults to {@link #SDK_VERSION_CUR_DEVELOPMENT}.
      */
+    @libcore.api.CorePlatformApi
     public synchronized void setTargetSdkVersion(int targetSdkVersion) {
         this.targetSdkVersion = targetSdkVersion;
         setTargetSdkVersionNative(this.targetSdkVersion);
@@ -176,6 +186,7 @@ public final class VMRuntime {
      * Gets the target SDK version. See {@link #setTargetSdkVersion} for
      * special values.
      */
+    @libcore.api.CorePlatformApi
     public synchronized int getTargetSdkVersion() {
         return targetSdkVersion;
     }
@@ -253,18 +264,21 @@ public final class VMRuntime {
      * Tells the VM to enable the JIT compiler. If the VM does not have a JIT
      * implementation, calling this method should have no effect.
      */
+    @libcore.api.CorePlatformApi
     public native void startJitCompilation();
 
     /**
      * Tells the VM to disable the JIT compiler. If the VM does not have a JIT
      * implementation, calling this method should have no effect.
      */
+    @libcore.api.CorePlatformApi
     public native void disableJitCompilation();
 
     /**
      * Returns true if the app has accessed a hidden API. This does not include
      * attempts which have been blocked.
      */
+    @libcore.api.CorePlatformApi
     public native boolean hasUsedHiddenApi();
 
     /**
@@ -275,6 +289,7 @@ public final class VMRuntime {
      *         signature of a blacklisted API. All matching APIs are treated as if they were on
      *         the whitelist: access permitted, and no logging..
      */
+    @libcore.api.CorePlatformApi
     public native void setHiddenApiExemptions(String[] signaturePrefixes);
 
     /**
@@ -283,6 +298,7 @@ public final class VMRuntime {
      * @param rate Proportion of hidden API accesses that will be logged; an integer between
      *                0 and 0x10000 inclusive.
      */
+    @libcore.api.CorePlatformApi
     public native void setHiddenApiAccessLogSamplingRate(int rate);
 
     /**
@@ -290,6 +306,7 @@ public final class VMRuntime {
      * This is used to implement native allocations on the Java heap, such as DirectByteBuffers
      * and Bitmaps.
      */
+    @libcore.api.CorePlatformApi
     @FastNative
     public native Object newNonMovableArray(Class<?> componentType, int length);
 
@@ -298,6 +315,7 @@ public final class VMRuntime {
      * avoiding any padding after the array. The amount of padding varies depending on the
      * componentType and the memory allocator implementation.
      */
+    @libcore.api.CorePlatformApi
     @FastNative
     public native Object newUnpaddedArray(Class<?> componentType, int minLength);
 
@@ -305,6 +323,7 @@ public final class VMRuntime {
      * Returns the address of array[0]. This differs from using JNI in that JNI might lie and
      * give you the address of a copy of the array when in forcecopy mode.
      */
+    @libcore.api.CorePlatformApi
     @FastNative
     public native long addressOf(Object array);
 
@@ -312,12 +331,14 @@ public final class VMRuntime {
      * Removes any growth limits, allowing the application to allocate
      * up to the maximum heap size.
      */
+    @libcore.api.CorePlatformApi
     public native void clearGrowthLimit();
 
     /**
      * Make the current growth limit the new non growth limit capacity by releasing pages which
      * are after the growth limit but before the non growth limit capacity.
      */
+    @libcore.api.CorePlatformApi
     public native void clampGrowthLimit();
 
     /**
@@ -329,6 +350,7 @@ public final class VMRuntime {
     /**
      * Returns true if native debugging is on.
      */
+    @libcore.api.CorePlatformApi
     @FastNative
     public native boolean isNativeDebuggable();
 
@@ -345,11 +367,13 @@ public final class VMRuntime {
      * unusually high rate and a GC is performed inside of the function to prevent memory usage
      * from excessively increasing.
      */
+    @libcore.api.CorePlatformApi
     public native void registerNativeAllocation(int bytes);
 
     /**
      * Registers a native free by reducing the number of native bytes accounted for.
      */
+    @libcore.api.CorePlatformApi
     public native void registerNativeFree(int bytes);
 
     /**
@@ -376,6 +400,7 @@ public final class VMRuntime {
         }
     }
 
+    @libcore.api.CorePlatformApi
     public native void requestConcurrentGC();
     public native void concurrentGC();
     public native void requestHeapTrim();
@@ -388,12 +413,14 @@ public final class VMRuntime {
      * Let the heap know of the new process state. This can change allocation and garbage collection
      * behavior regarding trimming and compaction.
      */
+    @libcore.api.CorePlatformApi
     public native void updateProcessState(int state);
 
     /**
      * Fill in dex caches with classes, fields, and methods that are
      * already loaded. Typically used after Zygote preloading.
      */
+    @libcore.api.CorePlatformApi
     public native void preloadDexCaches();
 
     /**
@@ -401,6 +428,7 @@ public final class VMRuntime {
      * @param profileFile the path of the file where the profile information should be stored.
      * @param codePaths the code paths that should be profiled.
      */
+    @libcore.api.CorePlatformApi
     public static native void registerAppInfo(String profileFile, String[] codePaths);
 
     /**
@@ -410,6 +438,7 @@ public final class VMRuntime {
      *
      * This influences the compilation of the applications classes.
      */
+    @libcore.api.CorePlatformApi
     public static String getInstructionSet(String abi) {
         final String instructionSet = ABI_TO_INSTRUCTION_SET_MAP.get(abi);
         if (instructionSet == null) {
@@ -419,12 +448,14 @@ public final class VMRuntime {
         return instructionSet;
     }
 
+    @libcore.api.CorePlatformApi
     public static boolean is64BitInstructionSet(String instructionSet) {
         return "arm64".equals(instructionSet) ||
                 "x86_64".equals(instructionSet) ||
                 "mips64".equals(instructionSet);
     }
 
+    @libcore.api.CorePlatformApi
     public static boolean is64BitAbi(String abi) {
         return is64BitInstructionSet(getInstructionSet(abi));
     }
@@ -434,11 +465,13 @@ public final class VMRuntime {
      * set mapped from disk storage, versus being interpretted from
      * dirty pages in memory.
      */
+    @libcore.api.CorePlatformApi
     public static native boolean isBootClassPathOnDisk(String instructionSet);
 
     /**
      * Returns the instruction set of the current runtime.
      */
+    @libcore.api.CorePlatformApi
     public static native String getCurrentInstructionSet();
 
     /**
@@ -446,12 +479,14 @@ public final class VMRuntime {
      * various reasons, e.g., after an OTA. The return value is for the current instruction
      * set.
      */
+    @libcore.api.CorePlatformApi
     public static native boolean didPruneDalvikCache();
 
     /**
      * Register the current execution thread to the runtime as sensitive thread.
      * Should be called just once. Subsequent calls are ignored.
      */
+    @libcore.api.CorePlatformApi
     public static native void registerSensitiveThread();
 
     /**
@@ -462,6 +497,7 @@ public final class VMRuntime {
     /**
      * Sets a callback that the runtime can call whenever a usage of a non SDK API is detected.
      */
+    @libcore.api.CorePlatformApi
     public static void setNonSdkApiUsageConsumer(Consumer<String> consumer) {
         nonSdkApiUsageConsumer = consumer;
     }
@@ -471,10 +507,12 @@ public final class VMRuntime {
      * If deduping is enabled, only the first usage of each API will be detected. The default
      * behaviour is to dedupe.
      */
+    @libcore.api.CorePlatformApi
     public static native void setDedupeHiddenApiWarnings(boolean dedupe);
 
     /**
      * Sets the package name of the app running in this process.
      */
+    @libcore.api.CorePlatformApi
     public static native void setProcessPackageName(String packageName);
 }

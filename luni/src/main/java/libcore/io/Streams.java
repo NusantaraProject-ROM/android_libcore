@@ -27,6 +27,8 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.util.concurrent.atomic.AtomicReference;
 
+/** @hide */
+@libcore.api.CorePlatformApi
 public final class Streams {
     private static AtomicReference<byte[]> skipBuffer = new AtomicReference<byte[]>();
 
@@ -37,6 +39,7 @@ public final class Streams {
      * InputStream assumes that you implement InputStream.read(int) and provides default
      * implementations of the others, but often the opposite is more efficient.
      */
+    @libcore.api.CorePlatformApi
     public static int readSingleByte(InputStream in) throws IOException {
         byte[] buffer = new byte[1];
         int result = in.read(buffer, 0, 1);
@@ -48,6 +51,7 @@ public final class Streams {
      * OutputStream assumes that you implement OutputStream.write(int) and provides default
      * implementations of the others, but often the opposite is more efficient.
      */
+    @libcore.api.CorePlatformApi
     public static void writeSingleByte(OutputStream out, int b) throws IOException {
         byte[] buffer = new byte[1];
         buffer[0] = (byte) (b & 0xff);
@@ -57,6 +61,7 @@ public final class Streams {
     /**
      * Fills 'dst' with bytes from 'in', throwing EOFException if insufficient bytes are available.
      */
+    @libcore.api.CorePlatformApi
     public static void readFully(InputStream in, byte[] dst) throws IOException {
         readFully(in, dst, 0, dst.length);
     }
@@ -91,6 +96,7 @@ public final class Streams {
     /**
      * Returns a byte[] containing the remainder of 'in', closing it when done.
      */
+    @libcore.api.CorePlatformApi
     public static byte[] readFully(InputStream in) throws IOException {
         try {
             return readFullyNoClose(in);
@@ -102,6 +108,7 @@ public final class Streams {
     /**
      * Returns a byte[] containing the remainder of 'in'.
      */
+    @libcore.api.CorePlatformApi
     public static byte[] readFullyNoClose(InputStream in) throws IOException {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
@@ -115,6 +122,7 @@ public final class Streams {
     /**
      * Returns the remainder of 'reader' as a string, closing it when done.
      */
+    @libcore.api.CorePlatformApi
     public static String readFully(Reader reader) throws IOException {
         try {
             StringWriter writer = new StringWriter();
@@ -147,6 +155,7 @@ public final class Streams {
      * streams may call other streams in their skip() method, also clobbering the
      * buffer.
      */
+    @libcore.api.CorePlatformApi
     public static long skipByReading(InputStream in, long byteCount) throws IOException {
         // acquire the shared skip buffer.
         byte[] buffer = skipBuffer.getAndSet(null);
@@ -177,6 +186,7 @@ public final class Streams {
      * Copies all of the bytes from {@code in} to {@code out}. Neither stream is closed.
      * Returns the total number of bytes transferred.
      */
+    @libcore.api.CorePlatformApi
     public static int copy(InputStream in, OutputStream out) throws IOException {
         int total = 0;
         byte[] buffer = new byte[8192];

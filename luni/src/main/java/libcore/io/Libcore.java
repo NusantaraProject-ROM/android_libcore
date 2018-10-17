@@ -16,6 +16,9 @@
 
 package libcore.io;
 
+/** @hide */
+@libcore.api.CorePlatformApi
+@libcore.api.IntraCoreApi
 public final class Libcore {
     private Libcore() { }
 
@@ -29,5 +32,6 @@ public final class Libcore {
     /**
      * Access to syscalls with helpful checks/guards.
      */
+    @libcore.api.IntraCoreApi
     public static Os os = new BlockGuardOs(rawOs);
 }

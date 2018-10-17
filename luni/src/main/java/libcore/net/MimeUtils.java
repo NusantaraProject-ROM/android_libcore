@@ -27,7 +27,9 @@ import java.util.regex.Pattern;
 /**
  * Utilities for dealing with MIME types.
  * Used to implement java.net.URLConnection and android.webkit.MimeTypeMap.
+ * @hide
  */
+@libcore.api.CorePlatformApi
 public final class MimeUtils {
     private static final Pattern splitPattern = Pattern.compile("\\s+");
 
@@ -91,6 +93,7 @@ public final class MimeUtils {
      * @return True if a extension has been registered for
      * the given case insensitive MIME type.
      */
+    @libcore.api.CorePlatformApi
     public static boolean hasMimeType(String mimeType) {
         return (guessExtensionFromMimeType(mimeType) != null);
     }
@@ -101,6 +104,7 @@ public final class MimeUtils {
      * @return The MIME type has been registered for
      * the given case insensitive file extension or null if there is none.
      */
+    @libcore.api.CorePlatformApi
     public static String guessMimeTypeFromExtension(String extension) {
         if (extension == null || extension.isEmpty()) {
             return null;
@@ -115,6 +119,7 @@ public final class MimeUtils {
      * @return True if a MIME type has been registered for
      * the given case insensitive file extension.
      */
+    @libcore.api.CorePlatformApi
     public static boolean hasExtension(String extension) {
         return (guessMimeTypeFromExtension(extension) != null);
     }
@@ -127,6 +132,7 @@ public final class MimeUtils {
      * @return The extension has been registered for
      * the given case insensitive MIME type or null if there is none.
      */
+    @libcore.api.CorePlatformApi
     public static String guessExtensionFromMimeType(String mimeType) {
         if (mimeType == null || mimeType.isEmpty()) {
             return null;

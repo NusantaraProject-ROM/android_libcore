@@ -32,7 +32,9 @@ import libcore.util.Objects;
  * Note that you share these; you must not alter any of the fields, nor their array elements
  * in the case of arrays. If you ever expose any of these things to user code, you must give
  * them a clone rather than the original.
+ * @hide
  */
+@libcore.api.CorePlatformApi
 public final class LocaleData {
     // A cache for the locale-specific data.
     private static final HashMap<String, LocaleData> localeDataCache = new HashMap<String, LocaleData>();
@@ -47,29 +49,45 @@ public final class LocaleData {
     }
 
     // Used by Calendar.
+    @libcore.api.CorePlatformApi
     public Integer firstDayOfWeek;
     public Integer minimalDaysInFirstWeek;
 
     // Used by DateFormatSymbols.
+    @libcore.api.CorePlatformApi
     public String[] amPm; // "AM", "PM".
     public String[] eras; // "BC", "AD".
 
+    @libcore.api.CorePlatformApi
     public String[] longMonthNames; // "January", ...
+    @libcore.api.CorePlatformApi
     public String[] shortMonthNames; // "Jan", ...
+    @libcore.api.CorePlatformApi
     public String[] tinyMonthNames; // "J", ...
+    @libcore.api.CorePlatformApi
     public String[] longStandAloneMonthNames; // "January", ...
+    @libcore.api.CorePlatformApi
     public String[] shortStandAloneMonthNames; // "Jan", ...
+    @libcore.api.CorePlatformApi
     public String[] tinyStandAloneMonthNames; // "J", ...
 
+    @libcore.api.CorePlatformApi
     public String[] longWeekdayNames; // "Sunday", ...
+    @libcore.api.CorePlatformApi
     public String[] shortWeekdayNames; // "Sun", ...
+    @libcore.api.CorePlatformApi
     public String[] tinyWeekdayNames; // "S", ...
+    @libcore.api.CorePlatformApi
     public String[] longStandAloneWeekdayNames; // "Sunday", ...
+    @libcore.api.CorePlatformApi
     public String[] shortStandAloneWeekdayNames; // "Sun", ...
+    @libcore.api.CorePlatformApi
     public String[] tinyStandAloneWeekdayNames; // "S", ...
 
     // Used by frameworks/base DateSorter and DateUtils.
+    @libcore.api.CorePlatformApi
     public String yesterday; // "Yesterday".
+    @libcore.api.CorePlatformApi
     public String today; // "Today".
     public String tomorrow; // "Tomorrow".
 
@@ -84,17 +102,24 @@ public final class LocaleData {
     public String shortDateFormat;
 
     // Used by TimePicker. Not currently used by UTS#35.
+    @libcore.api.CorePlatformApi
     public String narrowAm; // "a".
+    @libcore.api.CorePlatformApi
     public String narrowPm; // "p".
 
     // Used by DateFormat to implement 12- and 24-hour SHORT and MEDIUM.
-    // The first two are also used directly by frameworks code.
+    // They are also used directly by frameworks code.
+    @libcore.api.CorePlatformApi
     public String timeFormat_hm;
+    @libcore.api.CorePlatformApi
     public String timeFormat_Hm;
+    @libcore.api.CorePlatformApi
     public String timeFormat_hms;
+    @libcore.api.CorePlatformApi
     public String timeFormat_Hms;
 
     // Used by DecimalFormatSymbols.
+    @libcore.api.CorePlatformApi
     public char zeroDigit;
     public char decimalSeparator;
     public char groupingSeparator;
@@ -134,6 +159,7 @@ public final class LocaleData {
     /**
      * Returns a shared LocaleData for the given locale.
      */
+    @libcore.api.CorePlatformApi
     public static LocaleData get(Locale locale) {
         if (locale == null) {
             throw new NullPointerException("locale == null");
@@ -161,6 +187,7 @@ public final class LocaleData {
         return Objects.toString(this);
     }
 
+    @libcore.api.CorePlatformApi
     public String getDateFormat(int style) {
         switch (style) {
         case DateFormat.SHORT:

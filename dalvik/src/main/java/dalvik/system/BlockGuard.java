@@ -33,6 +33,8 @@ import java.util.Objects;
  *
  * @hide
  */
+@libcore.api.CorePlatformApi
+@libcore.api.IntraCoreApi
 public final class BlockGuard {
 
     // TODO: refactor class name to something more generic, since its scope is
@@ -40,26 +42,34 @@ public final class BlockGuard {
 
     /**
      * Per-thread interface used to implement {@code StrictMode.ThreadPolicy}.
+     *
+     * @hide
      */
+    @libcore.api.CorePlatformApi
+    @libcore.api.IntraCoreApi
     public interface Policy {
         /**
          * Called on disk writes.
          */
+        @libcore.api.CorePlatformApi
         void onWriteToDisk();
 
         /**
          * Called on disk reads.
          */
+        @libcore.api.CorePlatformApi
         void onReadFromDisk();
 
         /**
          * Called on network operations.
          */
+        @libcore.api.IntraCoreApi
         void onNetwork();
 
         /**
          * Called on unbuffered input/ouput operations.
          */
+        @libcore.api.CorePlatformApi
         void onUnbufferedIO();
 
         /**
@@ -73,6 +83,7 @@ public final class BlockGuard {
          * there.  The bits in the mask are from the DISALLOW_* and
          * PENALTY_* constants.
          */
+        @libcore.api.CorePlatformApi
         int getPolicyMask();
     }
 
@@ -146,6 +157,7 @@ public final class BlockGuard {
     /**
      * The default, permissive per-thread policy.
      */
+    @libcore.api.CorePlatformApi
     public static final Policy LAX_POLICY = new Policy() {
         @Override public String toString() { return "LAX_POLICY"; }
         @Override public void onWriteToDisk() {}
@@ -182,6 +194,8 @@ public final class BlockGuard {
      * @return the current thread's policy. Will return the {@link #LAX_POLICY}
      *         instance if nothing else is set.
      */
+    @libcore.api.CorePlatformApi
+    @libcore.api.IntraCoreApi
     public static @NonNull Policy getThreadPolicy() {
         return threadPolicy.get();
     }
@@ -195,6 +209,7 @@ public final class BlockGuard {
      * @param policy policy to set. Use the public {@link #LAX_POLICY} if you
      *            want to unset the active policy.
      */
+    @libcore.api.CorePlatformApi
     public static void setThreadPolicy(@NonNull Policy policy) {
         threadPolicy.set(Objects.requireNonNull(policy));
     }
