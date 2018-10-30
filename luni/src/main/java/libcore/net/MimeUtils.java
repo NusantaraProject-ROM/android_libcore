@@ -259,6 +259,14 @@ public final class MimeUtils {
         add("audio/x-scpls", "pls");
         add("audio/x-sd2", "sd2");
         add("audio/x-wav", "wav");
+        add("audio/qcelp", "qcp");
+        add("audio/ac3", "ac3");
+        add("audio/eac3", "ec3");
+        add("audio/x-ape", "ape");
+        add("audio/x-dsf", "dsf");
+        add("audio/x-dff", "dff");
+        add("audio/dsd", "dsd");
+        add("audio/mhas", "mp4");
         // image/bmp isn't IANA, so image/x-ms-bmp should come first.
         add("image/x-ms-bmp", "bmp");
         add("image/bmp", "bmp");
@@ -392,6 +400,8 @@ public final class MimeUtils {
         add("video/x-ms-wvx", "wvx");
         add("video/x-sgi-movie", "movie");
         add("video/x-webex", "wrf");
+        add("video/divx", "divx");
+        add("video/flv", "flv");
         add("x-conference/x-cooltalk", "ice");
         add("x-epoc/x-sisx-app", "sisx");
     }
