@@ -58,12 +58,7 @@ public static native long nanoTime();
 
 public static native void arraycopy(java.lang.Object src, int srcPos, java.lang.Object dest, int destPos, int length);
 
-@libcore.api.CorePlatformApi
-public static void arraycopy(byte[] src, int srcPos, byte[] dst, int dstPos, int length) { throw new RuntimeException("Stub!"); }
-
 public static int identityHashCode(java.lang.Object x) { throw new RuntimeException("Stub!"); }
-
-public static void setUnchangeableSystemProperty(java.lang.String key, java.lang.String value) { throw new RuntimeException("Stub!"); }
 
 public static java.util.Properties getProperties() { throw new RuntimeException("Stub!"); }
 
@@ -98,18 +93,6 @@ public static void loadLibrary(java.lang.String libname) { throw new RuntimeExce
 
 public static native java.lang.String mapLibraryName(java.lang.String libname);
 
-public static void logE(java.lang.String message) { throw new RuntimeException("Stub!"); }
-
-public static void logE(java.lang.String message, java.lang.Throwable th) { throw new RuntimeException("Stub!"); }
-
-public static void logI(java.lang.String message) { throw new RuntimeException("Stub!"); }
-
-public static void logI(java.lang.String message, java.lang.Throwable th) { throw new RuntimeException("Stub!"); }
-
-public static void logW(java.lang.String message) { throw new RuntimeException("Stub!"); }
-
-public static void logW(java.lang.String message, java.lang.Throwable th) { throw new RuntimeException("Stub!"); }
-
 public static final java.io.PrintStream err;
 static { err = null; }
 
@@ -118,5 +101,9 @@ static { in = null; }
 
 public static final java.io.PrintStream out;
 static { out = null; }
+
+@libcore.api.CorePlatformApi
+public static void logE(String message, Throwable th) { throw new RuntimeException("Stub!"); }
+
 }
 

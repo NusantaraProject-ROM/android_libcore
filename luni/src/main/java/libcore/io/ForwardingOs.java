@@ -43,15 +43,23 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 /**
  * Subclass this if you want to override some {@link Os} methods but otherwise delegate.
  */
+@libcore.api.CorePlatformApi
 public class ForwardingOs implements Os {
-    protected final Os os;
+    private final Os os;
 
-    public ForwardingOs(Os os) {
-        this.os = os;
+    @libcore.api.CorePlatformApi
+    protected ForwardingOs(Os os) {
+        this.os = Objects.requireNonNull(os);
+    }
+
+    /** @return the delegate object passed to the constructor. */
+    protected final Os delegate() {
+        return os;
     }
 
     public FileDescriptor accept(FileDescriptor fd, SocketAddress peerAddress) throws ErrnoException, SocketException { return os.accept(fd, peerAddress); }
@@ -139,6 +147,7 @@ public class ForwardingOs implements Os {
     public void msync(long address, long byteCount, int flags) throws ErrnoException { os.msync(address, byteCount, flags); }
     public void munlock(long address, long byteCount) throws ErrnoException { os.munlock(address, byteCount); }
     public void munmap(long address, long byteCount) throws ErrnoException { os.munmap(address, byteCount); }
+    @libcore.api.CorePlatformApi
     public FileDescriptor open(String path, int flags, int mode) throws ErrnoException { return os.open(path, flags, mode); }
     public FileDescriptor[] pipe2(int flags) throws ErrnoException { return os.pipe2(flags); }
     public int poll(StructPollfd[] fds, int timeoutMs) throws ErrnoException { return os.poll(fds, timeoutMs); }
@@ -199,4 +208,6 @@ public class ForwardingOs implements Os {
     public int write(FileDescriptor fd, ByteBuffer buffer) throws ErrnoException, InterruptedIOException { return os.write(fd, buffer); }
     public int write(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount) throws ErrnoException, InterruptedIOException { return os.write(fd, bytes, byteOffset, byteCount); }
     public int writev(FileDescriptor fd, Object[] buffers, int[] offsets, int[] byteCounts) throws ErrnoException, InterruptedIOException { return os.writev(fd, buffers, offsets, byteCounts); }
+
+    public String toString() { return "ForwardingOs{os=" + os + "}"; }
 }

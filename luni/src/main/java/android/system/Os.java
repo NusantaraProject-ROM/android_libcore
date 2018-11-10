@@ -589,6 +589,7 @@ public final class Os {
 
     /** @hide */
     @libcore.api.CorePlatformApi
+    @libcore.api.IntraCoreApi
     public static void setsockoptTimeval(FileDescriptor fd, int level, int option, StructTimeval value) throws ErrnoException { Libcore.os.setsockoptTimeval(fd, level, option, value); }
 
     /**
@@ -676,6 +677,7 @@ public final class Os {
     /**
      * @hide See <a href="http://man7.org/linux/man-pages/man2/unlink.2.html">unlink(2)</a>.
      */
+    @libcore.api.CorePlatformApi
     public static void unlink(String pathname) throws ErrnoException { Libcore.os.unlink(pathname); }
 
     /**
