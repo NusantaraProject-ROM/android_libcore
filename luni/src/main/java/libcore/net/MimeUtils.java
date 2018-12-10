@@ -266,7 +266,6 @@ public final class MimeUtils {
         add("audio/x-dsf", "dsf");
         add("audio/x-dff", "dff");
         add("audio/dsd", "dsd");
-        add("audio/mhas", "mp4");
         // image/bmp isn't IANA, so image/x-ms-bmp should come first.
         add("image/x-ms-bmp", "bmp");
         add("image/bmp", "bmp");
