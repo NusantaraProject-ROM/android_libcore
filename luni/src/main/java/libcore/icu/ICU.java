@@ -16,6 +16,7 @@
 
 package libcore.icu;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -443,6 +444,7 @@ public final class ICU {
 
   public static native String getISO3Language(String languageTag);
 
+  @UnsupportedAppUsage
   @libcore.api.CorePlatformApi
   public static Locale addLikelySubtags(Locale locale) {
       return Locale.forLanguageTag(addLikelySubtags(locale.toLanguageTag()).replace('_', '-'));
@@ -451,6 +453,7 @@ public final class ICU {
   /**
    * @deprecated use {@link #addLikelySubtags(java.util.Locale)} instead.
    */
+  @UnsupportedAppUsage
   @Deprecated
   public static native String addLikelySubtags(String locale);
 
@@ -458,6 +461,7 @@ public final class ICU {
    * @deprecated use {@link java.util.Locale#getScript()} instead. This has been kept
    *     around only for the support library.
    */
+  @UnsupportedAppUsage
   @Deprecated
   public static native String getScript(String locale);
 
