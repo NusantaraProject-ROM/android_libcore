@@ -16,6 +16,7 @@
 
 package libcore.net;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -31,6 +32,7 @@ import java.util.regex.Pattern;
  */
 @libcore.api.CorePlatformApi
 public final class MimeUtils {
+
     private static final Pattern splitPattern = Pattern.compile("\\s+");
 
     private static final Map<String, String> mimeTypeToExtensionMap = new HashMap<String, String>();
@@ -87,6 +89,9 @@ public final class MimeUtils {
         }
     }
 
+    private MimeUtils() {
+    }
+
     /**
      * Returns true if the given case insensitive MIME type has an entry in the map.
      * @param mimeType A MIME type (i.e. text/plain)
@@ -104,6 +109,7 @@ public final class MimeUtils {
      * @return The MIME type has been registered for
      * the given case insensitive file extension or null if there is none.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static String guessMimeTypeFromExtension(String extension) {
         if (extension == null || extension.isEmpty()) {
@@ -132,6 +138,7 @@ public final class MimeUtils {
      * @return The extension has been registered for
      * the given case insensitive MIME type or null if there is none.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static String guessExtensionFromMimeType(String mimeType) {
         if (mimeType == null || mimeType.isEmpty()) {
