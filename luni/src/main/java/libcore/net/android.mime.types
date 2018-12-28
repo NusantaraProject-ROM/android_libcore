@@ -40,6 +40,14 @@ audio/sp-midi smf
 audio/x-matroska mka
 audio/x-pn-realaudio ra
 
+audio/qcelp qcp
+audio/ac3 ac3
+audio/eac3 ec3
+audio/x-ape ape
+audio/x-dsf dsf
+audio/x-dff dff
+audio/dsd dsd
+
 image/bmp bmp
 image/heic heic
 image/heic-sequence heics
@@ -70,6 +78,8 @@ video/m4v m4v
 video/mp2p mpeg
 video/mp2ts ts
 video/x-webex wrf
+video/divx divx
+video/flv flv
 
 # Special cases where Android has a strong opinion about mappings, so we
 # define them very last and use "!" to ensure that we force the mapping
