@@ -33,6 +33,8 @@ import libcore.util.BasicLruCache;
  */
 @libcore.api.CorePlatformApi
 public final class ICU {
+
+  @UnsupportedAppUsage
   private static final BasicLruCache<String, String> CACHED_PATTERNS =
       new BasicLruCache<String, String>(8);
 
@@ -41,6 +43,9 @@ public final class ICU {
   private static String[] isoCountries;
 
   private static String[] isoLanguages;
+
+  private ICU() {
+  }
 
   /**
    * Returns an array of two-letter ISO 639-1 language codes, either from ICU or our cache.
@@ -289,6 +294,7 @@ public final class ICU {
     return localesFromStrings(getAvailableNumberFormatLocalesNative());
   }
 
+  @UnsupportedAppUsage
   @libcore.api.CorePlatformApi
   public static String getBestDateTimePattern(String skeleton, Locale locale) {
     String languageTag = locale.toLanguageTag();
@@ -303,8 +309,10 @@ public final class ICU {
     }
   }
 
+  @UnsupportedAppUsage
   private static native String getBestDateTimePatternNative(String skeleton, String languageTag);
 
+  @UnsupportedAppUsage
   @libcore.api.CorePlatformApi
   public static char[] getDateFormatOrder(String pattern) {
     char[] result = new char[3];
