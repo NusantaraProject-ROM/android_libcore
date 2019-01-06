@@ -118,10 +118,12 @@ public class BaseDexClassLoader extends ClassLoader {
             String librarySearchPath, ClassLoader parent, ClassLoader[] sharedLibraryLoaders,
             boolean isTrusted) {
         super(parent);
-        this.pathList = new DexPathList(this, dexPath, librarySearchPath, null, isTrusted);
+        // Setup shared libraries before creating the path list. ART relies on the class loader
+        // hierarchy being finalized before loading dex files.
         this.sharedLibraryLoaders = sharedLibraryLoaders == null
                 ? null
                 : Arrays.copyOf(sharedLibraryLoaders, sharedLibraryLoaders.length);
+        this.pathList = new DexPathList(this, dexPath, librarySearchPath, null, isTrusted);
 
         if (reporter != null) {
             reportClassLoaderChain();
@@ -162,14 +164,15 @@ public class BaseDexClassLoader extends ClassLoader {
      * dexFile must be an in-memory representation of a full dexFile.
      *
      * @param dexFiles the array of in-memory dex files containing classes.
+     * @param librarySearchPath the list of directories containing native
+     *   libraries, delimited by {@code File.pathSeparator}; may be {@code null}
      * @param parent the parent class loader
      *
      * @hide
      */
-    public BaseDexClassLoader(ByteBuffer[] dexFiles, ClassLoader parent) {
-        // TODO We should support giving this a library search path maybe.
+    public BaseDexClassLoader(ByteBuffer[] dexFiles, String librarySearchPath, ClassLoader parent) {
         super(parent);
-        this.pathList = new DexPathList(this, dexFiles);
+        this.pathList = new DexPathList(this, dexFiles, librarySearchPath);
         this.sharedLibraryLoaders = null;
     }
 

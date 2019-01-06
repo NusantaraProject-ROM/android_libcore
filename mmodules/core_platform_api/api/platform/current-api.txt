@@ -774,7 +774,6 @@ package dalvik.system {
   }
 
   public final class VMStack {
-    ctor public VMStack();
     method public static dalvik.system.AnnotatedStackTraceElement[] getAnnotatedThreadStackTrace(java.lang.Thread);
   }
 
@@ -969,7 +968,6 @@ package libcore.icu {
   }
 
   public final class ICU {
-    ctor public ICU();
     method public static java.util.Locale addLikelySubtags(java.util.Locale);
     method public static java.lang.String getBestDateTimePattern(java.lang.String, java.util.Locale);
     method public static char[] getDateFormatOrder(java.lang.String);
@@ -1023,7 +1021,6 @@ package libcore.internal {
 package libcore.io {
 
   public final class DropBox {
-    ctor public DropBox();
     method public static void setReporter(libcore.io.DropBox.Reporter);
   }
 
@@ -1033,7 +1030,6 @@ package libcore.io {
   }
 
   public final class EventLogger {
-    ctor public EventLogger();
     method public static void setReporter(libcore.io.EventLogger.Reporter);
   }
 
@@ -1116,7 +1112,6 @@ package libcore.mmodule.libart {
 package libcore.net {
 
   public final class MimeUtils {
-    ctor public MimeUtils();
     method public static java.lang.String guessExtensionFromMimeType(java.lang.String);
     method public static java.lang.String guessMimeTypeFromExtension(java.lang.String);
     method public static boolean hasExtension(java.lang.String);
@@ -1143,20 +1138,16 @@ package libcore.net.event {
 
 }
 
-package libcore.util {
-
-  public final class ArrayUtils {
-    method public static void throwsIfOutOfBounds(int, int, int);
-  }
+package libcore.timezone {
 
   public final class CountryTimeZones {
     method public java.lang.String getCountryIso();
     method public java.lang.String getDefaultTimeZoneId();
-    method public java.util.List<libcore.util.CountryTimeZones.TimeZoneMapping> getTimeZoneMappings();
+    method public java.util.List<libcore.timezone.CountryTimeZones.TimeZoneMapping> getTimeZoneMappings();
     method public boolean hasUtcZone(long);
     method public boolean isDefaultOkForCountryTimeZoneDetection(long);
     method public boolean isForCountryCode(java.lang.String);
-    method public deprecated libcore.util.CountryTimeZones.OffsetResult lookupByOffsetWithBias(int, boolean, long, android.icu.util.TimeZone);
+    method public deprecated libcore.timezone.CountryTimeZones.OffsetResult lookupByOffsetWithBias(int, boolean, long, android.icu.util.TimeZone);
   }
 
   public static final class CountryTimeZones.OffsetResult {
@@ -1165,7 +1156,7 @@ package libcore.util {
   }
 
   public static final class CountryTimeZones.TimeZoneMapping {
-    method public static libcore.util.CountryTimeZones.TimeZoneMapping createForTests(java.lang.String, boolean, java.lang.Long);
+    method public static libcore.timezone.CountryTimeZones.TimeZoneMapping createForTests(java.lang.String, boolean, java.lang.Long);
     field public final java.lang.Long notUsedAfter;
     field public final boolean showInPicker;
     field public final java.lang.String timeZoneId;
@@ -1173,8 +1164,59 @@ package libcore.util {
 
   public final class CountryZonesFinder {
     method public java.util.List<java.lang.String> lookupAllCountryIsoCodes();
-    method public libcore.util.CountryTimeZones lookupCountryTimeZones(java.lang.String);
-    method public java.util.List<libcore.util.CountryTimeZones> lookupCountryTimeZonesForZoneId(java.lang.String);
+    method public libcore.timezone.CountryTimeZones lookupCountryTimeZones(java.lang.String);
+    method public java.util.List<libcore.timezone.CountryTimeZones> lookupCountryTimeZonesForZoneId(java.lang.String);
+  }
+
+  public final class TimeZoneFinder {
+    method public static libcore.timezone.TimeZoneFinder createInstance(java.lang.String) throws java.io.IOException;
+    method public libcore.timezone.CountryZonesFinder getCountryZonesFinder();
+    method public java.lang.String getIanaVersion();
+    method public static libcore.timezone.TimeZoneFinder getInstance();
+    method public libcore.timezone.CountryTimeZones lookupCountryTimeZones(java.lang.String);
+    method public java.lang.String lookupDefaultTimeZoneIdByCountry(java.lang.String);
+    method public android.icu.util.TimeZone lookupTimeZoneByCountryAndOffset(java.lang.String, int, boolean, long, android.icu.util.TimeZone);
+    method public java.util.List<java.lang.String> lookupTimeZoneIdsByCountry(java.lang.String);
+    method public java.util.List<android.icu.util.TimeZone> lookupTimeZonesByCountry(java.lang.String);
+    method public void validate() throws java.io.IOException;
+  }
+
+  public class TzDataSetVersion {
+    ctor public TzDataSetVersion(int, int, java.lang.String, int) throws libcore.timezone.TzDataSetVersion.TzDataSetException;
+    method public static int currentFormatMajorVersion();
+    method public static int currentFormatMinorVersion();
+    method public static boolean isCompatibleWithThisDevice(libcore.timezone.TzDataSetVersion);
+    method public byte[] toBytes();
+    field public final int formatMajorVersion;
+    field public final int formatMinorVersion;
+    field public final int revision;
+    field public final java.lang.String rulesVersion;
+  }
+
+  public static class TzDataSetVersion.TzDataSetException extends java.lang.Exception {
+    ctor public TzDataSetVersion.TzDataSetException(java.lang.String);
+    ctor public TzDataSetVersion.TzDataSetException(java.lang.String, java.lang.Throwable);
+  }
+
+  public final class ZoneInfoDB {
+    method public static libcore.timezone.ZoneInfoDB.TzData getInstance();
+  }
+
+  public static class ZoneInfoDB.TzData implements java.lang.AutoCloseable {
+    method public static java.lang.String getRulesVersion(java.io.File) throws java.io.IOException;
+    method public java.lang.String getVersion();
+    method public boolean hasTimeZone(java.lang.String) throws java.io.IOException;
+    method public static libcore.timezone.ZoneInfoDB.TzData loadTzData(java.lang.String);
+    method public libcore.util.ZoneInfo makeTimeZone(java.lang.String) throws java.io.IOException;
+    method public void validate() throws java.io.IOException;
+  }
+
+}
+
+package libcore.util {
+
+  public final class ArrayUtils {
+    method public static void throwsIfOutOfBounds(int, int, int);
   }
 
   public final class EmptyArray {
@@ -1203,21 +1245,7 @@ package libcore.util {
   }
 
   public class SneakyThrow {
-    ctor public SneakyThrow();
     method public static void sneakyThrow(java.lang.Throwable);
-  }
-
-  public final class TimeZoneFinder {
-    method public static libcore.util.TimeZoneFinder createInstance(java.lang.String) throws java.io.IOException;
-    method public libcore.util.CountryZonesFinder getCountryZonesFinder();
-    method public java.lang.String getIanaVersion();
-    method public static libcore.util.TimeZoneFinder getInstance();
-    method public libcore.util.CountryTimeZones lookupCountryTimeZones(java.lang.String);
-    method public java.lang.String lookupDefaultTimeZoneIdByCountry(java.lang.String);
-    method public android.icu.util.TimeZone lookupTimeZoneByCountryAndOffset(java.lang.String, int, boolean, long, android.icu.util.TimeZone);
-    method public java.util.List<java.lang.String> lookupTimeZoneIdsByCountry(java.lang.String);
-    method public java.util.List<android.icu.util.TimeZone> lookupTimeZonesByCountry(java.lang.String);
-    method public void validate() throws java.io.IOException;
   }
 
   public class XmlObjectFactory {
@@ -1253,19 +1281,6 @@ package libcore.util {
     method public void setWeekDay(int);
     method public void setYear(int);
     method public void setYearDay(int);
-  }
-
-  public final class ZoneInfoDB {
-    method public static libcore.util.ZoneInfoDB.TzData getInstance();
-  }
-
-  public static class ZoneInfoDB.TzData implements java.lang.AutoCloseable {
-    method public static java.lang.String getRulesVersion(java.io.File) throws java.io.IOException;
-    method public java.lang.String getVersion();
-    method public boolean hasTimeZone(java.lang.String) throws java.io.IOException;
-    method public static libcore.util.ZoneInfoDB.TzData loadTzData(java.lang.String);
-    method public libcore.util.ZoneInfo makeTimeZone(java.lang.String) throws java.io.IOException;
-    method public void validate() throws java.io.IOException;
   }
 
 }

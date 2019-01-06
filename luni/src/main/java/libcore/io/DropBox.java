@@ -16,6 +16,7 @@
 
 package libcore.io;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.util.Base64;
 
 /**
@@ -28,6 +29,9 @@ public final class DropBox {
      * Hook for customizing how events are reported.
      */
     private static volatile Reporter REPORTER = new DefaultReporter();
+
+    private DropBox() {
+    }
 
     /**
      * Used to replace default Reporter for logging events. Must be non-null.
@@ -79,6 +83,7 @@ public final class DropBox {
         getReporter().addData(tag, data, flags);
     }
 
+    @UnsupportedAppUsage
     public static void addText(String tag, String data) {
         getReporter().addText(tag, data);
     }
