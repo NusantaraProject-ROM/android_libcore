@@ -55,7 +55,6 @@ cc_library_shared {
         ":luni_native_srcs",
         "dalvik/src/main/native/org_apache_harmony_dalvik_NativeTestTarget.cpp",
     ],
-
     shared_libs: [
         "libbase",
         "libcrypto",
@@ -70,8 +69,11 @@ cc_library_shared {
     ],
     target: {
         android: {
-            shared_libs: [
-                "libutils",
+            cflags: [
+                // -DANDROID_LINK_SHARED_ICU4C to enable access to the full ICU4C.
+                // See external/icu/android_icu4c/include/uconfig_local.h
+                // for more information.
+                "-DANDROID_LINK_SHARED_ICU4C",
             ],
         },
     },
@@ -114,6 +116,14 @@ cc_defaults {
                 "-D_GNU_SOURCE",
                 "-DLINUX",
                 "-D__GLIBC__",
+            ],
+        },
+        android: {
+            cflags: [
+                // -DANDROID_LINK_SHARED_ICU4C to enable access to the full ICU4C.
+                // See external/icu/android_icu4c/include/uconfig_local.h
+                // for more information.
+                "-DANDROID_LINK_SHARED_ICU4C",
             ],
         },
     },

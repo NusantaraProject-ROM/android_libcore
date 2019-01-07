@@ -26,6 +26,7 @@
 package java.lang;
 
 import dalvik.annotation.compat.UnsupportedAppUsage;
+import dalvik.system.VersionCodes;
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public final class Character
@@ -597,7 +598,10 @@ public final class Character
 
     private static final long serialVersionUID = 3786198910865385080L; // 0x348b47d96b1a2678L
 
-    @UnsupportedAppUsage
+    /**
+     * @deprecated Use {@link #charValue()}.
+     */
+    @UnsupportedAppUsage(maxTargetSdk = VersionCodes.P)
     private final char value;
 
     {

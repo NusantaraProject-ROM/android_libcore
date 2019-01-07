@@ -418,14 +418,14 @@ package com.android.org.conscrypt {
 package dalvik.annotation.compat {
 
   public abstract class UnsupportedAppUsage implements java.lang.annotation.Annotation {
+    method public abstract java.lang.String expectedSignature();
+    method public abstract java.lang.String implicitMember();
+    method public abstract int maxTargetSdk();
+    method public abstract long trackingBug();
   }
 
-  public static class UnsupportedAppUsage.VERSION_CODES {
-    ctor public UnsupportedAppUsage.VERSION_CODES();
-    field public static final int CUR_DEVELOPMENT = 10000; // 0x2710
-    field public static final int O = 26; // 0x1a
-    field public static final int P = 28; // 0x1c
-    field public static final int Q = 10000; // 0x2710
+  public static abstract class UnsupportedAppUsage.Container implements java.lang.annotation.Annotation {
+    method public abstract dalvik.annotation.compat.UnsupportedAppUsage[] value();
   }
 
 }
@@ -447,13 +447,14 @@ package dalvik.system {
     method public void warnIfOpen();
   }
 
+  public class VersionCodes {
+    field public static final int O = 26; // 0x1a
+    field public static final int P = 28; // 0x1c
+  }
+
 }
 
 package java.net {
-
-  public class InetAddress implements java.io.Serializable {
-    method public static boolean isNumeric(java.lang.String);
-  }
 
   public class Socket implements java.io.Closeable {
     method public java.io.FileDescriptor getFileDescriptor$();
@@ -520,6 +521,16 @@ package libcore.net {
     ctor public NetworkSecurityPolicy();
     method public static libcore.net.NetworkSecurityPolicy getInstance();
     method public abstract boolean isCertificateTransparencyVerificationRequired(java.lang.String);
+  }
+
+}
+
+package libcore.util {
+
+  public abstract class NonNull implements java.lang.annotation.Annotation {
+  }
+
+  public abstract class Nullable implements java.lang.annotation.Annotation {
   }
 
 }

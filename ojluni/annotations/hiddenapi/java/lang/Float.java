@@ -26,6 +26,7 @@
 package java.lang;
 
 import dalvik.annotation.compat.UnsupportedAppUsage;
+import dalvik.system.VersionCodes;
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public final class Float extends java.lang.Number implements java.lang.Comparable<java.lang.Float> {
@@ -179,7 +180,10 @@ public final class Float extends java.lang.Number implements java.lang.Comparabl
 
     private static final long serialVersionUID = -2671257302660747028L; // 0xdaedc9a2db3cf0ecL
 
-    @UnsupportedAppUsage
+    /**
+     * @deprecated Use {@link #floatValue()}.
+     */
+    @UnsupportedAppUsage(maxTargetSdk = VersionCodes.P)
     private final float value;
 
     {

@@ -19,6 +19,8 @@ package libcore.util;
 import dalvik.system.VMRuntime;
 import sun.misc.Cleaner;
 
+import java.lang.ref.Reference;
+
 /**
  * A NativeAllocationRegistry is used to associate native allocations with
  * Java objects and register them with the runtime.
@@ -65,13 +67,21 @@ public class NativeAllocationRegistry {
      * native bytes this kind of native allocation takes up. Different
      * NativeAllocationRegistrys must be used to register native allocations
      * with different estimated sizes, even if they use the same
-     * <code>freeFunction</code>.
+     * <code>freeFunction</code>. This is used to help inform the garbage
+     * collector about the possible need for collection. Memory allocated with
+     * native malloc is implicitly included, and ideally should not be included in this
+     * argument. For malloc-based native allocations that are expected to be under
+     * 100Kbytes or so, the NativeAllocationRegistry(ClassLoader,long) constructor is
+     * preferred.
+     * <p>
      * @param classLoader  ClassLoader that was used to load the native
      *                     library freeFunction belongs to.
      * @param freeFunction address of a native function used to free this
      *                     kind of native allocation
      * @param size         estimated size in bytes of this kind of native
-     *                     allocation
+     *                     allocation. Should ideally exclude memory allocated by system
+     *                     malloc. However including it will simply double-count it,
+     *                     typically resulting in slightly increased GC frequency.
      * @throws IllegalArgumentException If <code>size</code> is negative
      */
     @libcore.api.CorePlatformApi
@@ -79,10 +89,17 @@ public class NativeAllocationRegistry {
         if (size < 0) {
             throw new IllegalArgumentException("Invalid native allocation size: " + size);
         }
-
         this.classLoader = classLoader;
         this.freeFunction = freeFunction;
         this.size = size;
+    }
+
+    /**
+     * Equivalent to NativeAllocationRegistry(classLoader, freeFunction, 0).
+     * Should be used when all native memory is allocated via system malloc.
+     */
+    public NativeAllocationRegistry(ClassLoader classLoader, long freeFunction) {
+        this(classLoader, freeFunction, 0);
     }
 
     /**
@@ -139,6 +156,8 @@ public class NativeAllocationRegistry {
         } // Other exceptions are impossible.
         // Enable the cleaner only after we can no longer throw anything, including OOME.
         thunk.setNativePtr(nativePtr);
+        // Ensure that cleaner doesn't get invoked before we enable it.
+        Reference.reachabilityFence(referent);
         return result;
     }
 
@@ -189,6 +208,7 @@ public class NativeAllocationRegistry {
         }
         registerNativeAllocation(this.size);
         thunk.setNativePtr(nativePtr);
+        Reference.reachabilityFence(referent);
         return result;
     }
 
@@ -223,6 +243,8 @@ public class NativeAllocationRegistry {
         }
     }
 
+    // Inform the garbage collector of the allocation. The size = 0 case is optimized in
+    // VMRuntime.
     // TODO: Change the runtime to support passing the size as a long instead
     // of an int. For now, we clamp the size to fit.
     private static void registerNativeAllocation(long size) {
