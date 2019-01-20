@@ -558,14 +558,14 @@ package com.android.org.conscrypt {
 package dalvik.annotation.compat {
 
   public abstract class UnsupportedAppUsage implements java.lang.annotation.Annotation {
+    method public abstract java.lang.String expectedSignature();
+    method public abstract java.lang.String implicitMember();
+    method public abstract int maxTargetSdk();
+    method public abstract long trackingBug();
   }
 
-  public static class UnsupportedAppUsage.VERSION_CODES {
-    ctor public UnsupportedAppUsage.VERSION_CODES();
-    field public static final int CUR_DEVELOPMENT = 10000; // 0x2710
-    field public static final int O = 26; // 0x1a
-    field public static final int P = 28; // 0x1c
-    field public static final int Q = 10000; // 0x2710
+  public static abstract class UnsupportedAppUsage.Container implements java.lang.annotation.Annotation {
+    method public abstract dalvik.annotation.compat.UnsupportedAppUsage[] value();
   }
 
 }
@@ -777,6 +777,11 @@ package dalvik.system {
     method public static dalvik.system.AnnotatedStackTraceElement[] getAnnotatedThreadStackTrace(java.lang.Thread);
   }
 
+  public class VersionCodes {
+    field public static final int O = 26; // 0x1a
+    field public static final int P = 28; // 0x1c
+  }
+
   public final class ZygoteHooks {
     ctor public ZygoteHooks();
     method public static void gcAndFinalize();
@@ -858,8 +863,8 @@ package java.net {
     method public static void clearDnsCache();
     method public static java.net.InetAddress[] getAllByNameOnNet(java.lang.String, int) throws java.net.UnknownHostException;
     method public static java.net.InetAddress getByNameOnNet(java.lang.String, int) throws java.net.UnknownHostException;
-    method public static boolean isNumeric(java.lang.String);
-    method public static java.net.InetAddress parseNumericAddress(java.lang.String);
+    method public static deprecated boolean isNumeric(java.lang.String);
+    method public static deprecated java.net.InetAddress parseNumericAddress(java.lang.String);
   }
 
   public class InetSocketAddress extends java.net.SocketAddress {
@@ -1020,23 +1025,6 @@ package libcore.internal {
 
 package libcore.io {
 
-  public final class DropBox {
-    method public static void setReporter(libcore.io.DropBox.Reporter);
-  }
-
-  public static abstract interface DropBox.Reporter {
-    method public abstract void addData(java.lang.String, byte[], int);
-    method public abstract void addText(java.lang.String, java.lang.String);
-  }
-
-  public final class EventLogger {
-    method public static void setReporter(libcore.io.EventLogger.Reporter);
-  }
-
-  public static abstract interface EventLogger.Reporter {
-    method public abstract void report(int, java.lang.Object...);
-  }
-
   public class ForwardingOs implements libcore.io.Os {
     ctor protected ForwardingOs(libcore.io.Os);
     method public boolean access(java.lang.String, int) throws android.system.ErrnoException;
@@ -1111,6 +1099,11 @@ package libcore.mmodule.libart {
 
 package libcore.net {
 
+  public class InetAddressUtils {
+    method public static boolean isNumericAddress(java.lang.String);
+    method public static java.net.InetAddress parseNumericAddress(java.lang.String);
+  }
+
   public final class MimeUtils {
     method public static java.lang.String guessExtensionFromMimeType(java.lang.String);
     method public static java.lang.String guessMimeTypeFromExtension(java.lang.String);
@@ -1168,6 +1161,10 @@ package libcore.timezone {
     method public java.util.List<libcore.timezone.CountryTimeZones> lookupCountryTimeZonesForZoneId(java.lang.String);
   }
 
+  public final class TimeZoneDataFiles {
+    method public static java.lang.String getDataTimeZoneFile(java.lang.String);
+  }
+
   public final class TimeZoneFinder {
     method public static libcore.timezone.TimeZoneFinder createInstance(java.lang.String) throws java.io.IOException;
     method public libcore.timezone.CountryZonesFinder getCountryZonesFinder();
@@ -1186,11 +1183,6 @@ package libcore.timezone {
     method public static int currentFormatMajorVersion();
     method public static int currentFormatMinorVersion();
     method public static boolean isCompatibleWithThisDevice(libcore.timezone.TzDataSetVersion);
-    method public byte[] toBytes();
-    field public final int formatMajorVersion;
-    field public final int formatMinorVersion;
-    field public final int revision;
-    field public final java.lang.String rulesVersion;
   }
 
   public static class TzDataSetVersion.TzDataSetException extends java.lang.Exception {
@@ -1217,6 +1209,23 @@ package libcore.util {
 
   public final class ArrayUtils {
     method public static void throwsIfOutOfBounds(int, int, int);
+  }
+
+  public class CoreLibraryDebug {
+    method public static libcore.util.DebugInfo getDebugInfo();
+  }
+
+  public class DebugInfo {
+    ctor public DebugInfo();
+    method public libcore.util.DebugInfo addStringEntry(java.lang.String, java.lang.String);
+    method public libcore.util.DebugInfo addStringEntry(java.lang.String, int);
+    method public java.util.List<libcore.util.DebugInfo.DebugEntry> getDebugEntries();
+  }
+
+  public static class DebugInfo.DebugEntry {
+    ctor public DebugInfo.DebugEntry(java.lang.String, java.lang.String);
+    method public java.lang.String getKey();
+    method public java.lang.String getStringValue();
   }
 
   public final class EmptyArray {

@@ -32,10 +32,15 @@ import java.util.regex.Pattern;
 public class TzDataSetVersion {
 
     /**
+     * The name typically given to the {@link TzDataSetVersion} file. See
+     * {@link TzDataSetVersion#readFromFile(File)}.
+     */
+    public static final String DEFAULT_FILE_NAME = "tz_version";
+
+    /**
      * The major tz data format version supported by this device.
      * Increment this for non-backwards compatible changes to the tz data format. Reset the minor
      * version to 1 when doing so.
-     * This constant must match the one in system/core/tzdatacheck/tzdatacheck.cpp.
      */
     private static final int CURRENT_FORMAT_MAJOR_VERSION = 3; // Android Q
 
@@ -50,7 +55,6 @@ public class TzDataSetVersion {
     /**
      * The minor tz data format version supported by this device. Increment this for
      * backwards-compatible changes to the tz data format.
-     * This constant must match the one in system/core/tzdatacheck/tzdatacheck.cpp.
      */
     private static final int CURRENT_FORMAT_MINOR_VERSION = 1;
 
@@ -94,13 +98,9 @@ public class TzDataSetVersion {
                     + REVISION_PATTERN.pattern()
                     + ".*" /* ignore trailing */);
 
-    @libcore.api.CorePlatformApi
     public final int formatMajorVersion;
-    @libcore.api.CorePlatformApi
     public final int formatMinorVersion;
-    @libcore.api.CorePlatformApi
     public final String rulesVersion;
-    @libcore.api.CorePlatformApi
     public final int revision;
 
     @libcore.api.CorePlatformApi
@@ -145,7 +145,6 @@ public class TzDataSetVersion {
         return fromBytes(versionBytes);
     }
 
-    @libcore.api.CorePlatformApi
     public byte[] toBytes() {
         return toBytes(formatMajorVersion, formatMinorVersion, rulesVersion, revision);
     }

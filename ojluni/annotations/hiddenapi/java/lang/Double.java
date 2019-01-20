@@ -26,6 +26,7 @@
 package java.lang;
 
 import dalvik.annotation.compat.UnsupportedAppUsage;
+import dalvik.system.VersionCodes;
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public final class Double extends java.lang.Number
@@ -176,7 +177,10 @@ public final class Double extends java.lang.Number
 
     private static final long serialVersionUID = -9172774392245257468L; // 0x80b3c24a296bfb04L
 
-    @UnsupportedAppUsage
+    /**
+     * @deprecated Use {@link #doubleValue()}.
+     */
+    @UnsupportedAppUsage(maxTargetSdk = VersionCodes.P)
     private final double value;
 
     {

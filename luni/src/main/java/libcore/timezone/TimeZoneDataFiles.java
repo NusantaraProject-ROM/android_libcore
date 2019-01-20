@@ -24,9 +24,10 @@ import java.util.List;
  *
  * @hide
  */
+@libcore.api.CorePlatformApi
 public final class TimeZoneDataFiles {
-
     private static final String ANDROID_ROOT_ENV = "ANDROID_ROOT";
+    private static final String ANDROID_RUNTIME_ROOT_ENV = "ANDROID_RUNTIME_ROOT";
     private static final String ANDROID_DATA_ENV = "ANDROID_DATA";
 
     private TimeZoneDataFiles() {}
@@ -38,29 +39,39 @@ public final class TimeZoneDataFiles {
      * <li>[0] - the location of the file in the /data partition (may not exist).</li>
      * <li>[1] - the location of the file from the time zone module under /apex (may not exist).
      * </li>
-     * <li>[2] - the location of the file in the /system partition (should exist).</li>
+     * <li>[2] - the location of the file from the runtime module under /apex (should exist).</li>
      * </ul>
+     * <li>[3] - the location of the file in the /system partition (should exist).</li>
      */
     // VisibleForTesting
     public static String[] getTimeZoneFilePaths(String fileName) {
         return new String[] {
                 getDataTimeZoneFile(fileName),
-                getTimeZoneModuleFile(fileName),
+                getTimeZoneModuleFile("tz/" + fileName),
+                getRuntimeModuleFile("tz/" + fileName),
                 getSystemTimeZoneFile(fileName)
         };
     }
 
-    private static String getDataTimeZoneFile(String fileName) {
+    @libcore.api.CorePlatformApi
+    public static String getDataTimeZoneFile(String fileName) {
         return System.getenv(ANDROID_DATA_ENV) + "/misc/zoneinfo/current/" + fileName;
     }
 
-    private static String getTimeZoneModuleFile(String fileName) {
+    public static String getTimeZoneModuleFile(String fileName) {
         return "/apex/com.android.tzdata/etc/" + fileName;
     }
 
-    // VisibleForTesting
+    public static String getRuntimeModuleFile(String fileName) {
+        return System.getenv(ANDROID_RUNTIME_ROOT_ENV) + "/etc/" + fileName;
+    }
+
     public static String getSystemTimeZoneFile(String fileName) {
-        return System.getenv(ANDROID_ROOT_ENV) + "/usr/share/zoneinfo/" + fileName;
+        return getEnvironmentPath(ANDROID_ROOT_ENV, "/usr/share/zoneinfo/" + fileName);
+    }
+
+    public static String getSystemIcuFile(String fileName) {
+        return getEnvironmentPath(ANDROID_ROOT_ENV, "/usr/icu/" + fileName);
     }
 
     public static String generateIcuDataPath() {
@@ -68,20 +79,21 @@ public final class TimeZoneDataFiles {
 
         // ICU should first look in ANDROID_DATA. This is used for (optional) time zone data
         // delivered by APK (https://source.android.com/devices/tech/config/timezone-rules)
-        String dataIcuDataPath = getEnvironmentPath(ANDROID_DATA_ENV, "/misc/zoneinfo/current/icu");
+        String dataIcuDataPath =
+                getEnvironmentPath(ANDROID_DATA_ENV, "/misc/zoneinfo/current/icu/");
         if (dataIcuDataPath != null) {
             paths.add(dataIcuDataPath);
         }
 
         // ICU should then look for a mounted time zone module file in /apex. This is used for
         // (optional) time zone data that can be updated with an APEX file.
-        String timeZoneModuleIcuDataPath = getTimeZoneModuleFile("");
+        String timeZoneModuleIcuDataPath = getTimeZoneModuleFile("icu/");
         if (timeZoneModuleIcuDataPath != null) {
             paths.add(timeZoneModuleIcuDataPath);
         }
 
         // ICU should always look in ANDROID_ROOT as this is where most of the data can be found.
-        String systemIcuDataPath = getEnvironmentPath(ANDROID_ROOT_ENV, "/usr/icu");
+        String systemIcuDataPath = getSystemIcuFile("");
         if (systemIcuDataPath != null) {
             paths.add(systemIcuDataPath);
         }

@@ -26,6 +26,7 @@
 package java.lang;
 
 import dalvik.annotation.compat.UnsupportedAppUsage;
+import dalvik.system.VersionCodes;
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public final class Short extends java.lang.Number implements java.lang.Comparable<java.lang.Short> {
@@ -146,7 +147,10 @@ public final class Short extends java.lang.Number implements java.lang.Comparabl
 
     private static final long serialVersionUID = 7515723908773894738L; // 0x684d37133460da52L
 
-    @UnsupportedAppUsage
+    /**
+     * @deprecated Use {@link #shortValue()}.
+     */
+    @UnsupportedAppUsage(maxTargetSdk = VersionCodes.P)
     private final short value;
 
     {

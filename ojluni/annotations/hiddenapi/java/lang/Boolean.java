@@ -26,6 +26,7 @@
 package java.lang;
 
 import dalvik.annotation.compat.UnsupportedAppUsage;
+import dalvik.system.VersionCodes;
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public final class Boolean
@@ -119,7 +120,10 @@ public final class Boolean
 
     private static final long serialVersionUID = -3665804199014368530L; // 0xcd207280d59cfaeeL
 
-    @UnsupportedAppUsage
+    /**
+     * @deprecated Use {@link #booleanValue()}.
+     */
+    @UnsupportedAppUsage(maxTargetSdk = VersionCodes.P)
     private final boolean value;
 
     {
