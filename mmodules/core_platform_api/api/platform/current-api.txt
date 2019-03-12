@@ -467,7 +467,6 @@ package com.android.org.conscrypt {
 
   public final class Conscrypt {
     method public static javax.net.ssl.X509TrustManager getDefaultX509TrustManager() throws java.security.KeyManagementException;
-    method public static javax.net.ssl.SSLContextSpi newPreferredSSLContextSpi();
   }
 
   public interface ConscryptCertStore {
@@ -475,12 +474,6 @@ package com.android.org.conscrypt {
 
   public final class FileClientSessionCache {
     method @dalvik.annotation.compat.UnsupportedAppUsage public static com.android.org.conscrypt.SSLClientSessionCache usingDirectory(java.io.File) throws java.io.IOException;
-  }
-
-  public abstract class OpenSSLContextImpl extends javax.net.ssl.SSLContextSpi {
-    method @dalvik.annotation.compat.UnsupportedAppUsage public com.android.org.conscrypt.ClientSessionContext engineGetClientSessionContext();
-    method public javax.net.ssl.SSLSocketFactory engineGetSocketFactory();
-    method public void engineInit(javax.net.ssl.KeyManager[], javax.net.ssl.TrustManager[], java.security.SecureRandom) throws java.security.KeyManagementException;
   }
 
   public final class OpenSSLProvider extends java.security.Provider {
@@ -785,7 +778,7 @@ package dalvik.system {
   }
 
   public static interface VMRuntime.HiddenApiUsageLogger {
-    method public void hiddenApiUsed(String, String, int, boolean);
+    method public void hiddenApiUsed(int, String, String, int, boolean);
     field public static final int ACCESS_METHOD_JNI = 2; // 0x2
     field public static final int ACCESS_METHOD_LINKING = 3; // 0x3
     field public static final int ACCESS_METHOD_NONE = 0; // 0x0
@@ -1168,6 +1161,8 @@ package libcore.timezone {
 
   public final class TimeZoneDataFiles {
     method public static String getDataTimeZoneFile(String);
+    method public static String getDataTimeZoneRootDir();
+    method public static String getRuntimeModuleTzVersionFile();
   }
 
   public final class TimeZoneFinder {
@@ -1188,6 +1183,10 @@ package libcore.timezone {
     method public static int currentFormatMajorVersion();
     method public static int currentFormatMinorVersion();
     method public static boolean isCompatibleWithThisDevice(libcore.timezone.TzDataSetVersion);
+    method public static libcore.timezone.TzDataSetVersion readFromFile(java.io.File) throws java.io.IOException, libcore.timezone.TzDataSetVersion.TzDataSetException;
+    method public byte[] toBytes();
+    field public static final String DEFAULT_FILE_NAME = "tz_version";
+    field public final String rulesVersion;
   }
 
   public static class TzDataSetVersion.TzDataSetException extends java.lang.Exception {
@@ -1200,7 +1199,6 @@ package libcore.timezone {
   }
 
   public static class ZoneInfoDB.TzData implements java.lang.AutoCloseable {
-    method public static String getRulesVersion(java.io.File) throws java.io.IOException;
     method public String getVersion();
     method public boolean hasTimeZone(String) throws java.io.IOException;
     method public static libcore.timezone.ZoneInfoDB.TzData loadTzData(String);
