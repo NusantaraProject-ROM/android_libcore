@@ -79,7 +79,6 @@ video/mp2p mpeg
 video/mp2ts ts
 video/x-webex wrf
 video/divx divx
-video/flv flv
 
 # Special cases where Android has a strong opinion about mappings, so we
 # define them very last and use "!" to ensure that we force the mapping
