@@ -71,11 +71,6 @@ package android.icu.util {
 
 package android.system {
 
-  public final class ErrnoException extends java.lang.Exception {
-    method public java.io.IOException rethrowAsIOException() throws java.io.IOException;
-    method public java.net.SocketException rethrowAsSocketException() throws java.net.SocketException;
-  }
-
   public class Int32Ref {
     ctor public Int32Ref(int);
     field @dalvik.annotation.compat.UnsupportedAppUsage public int value;
@@ -617,6 +612,7 @@ package dalvik.annotation.compat {
     method public abstract String expectedSignature() default "";
     method public abstract String implicitMember() default "";
     method public abstract int maxTargetSdk() default java.lang.Integer.MAX_VALUE;
+    method public abstract String publicAlternatives() default "";
     method public abstract long trackingBug() default 0;
   }
 
@@ -850,6 +846,7 @@ package dalvik.system {
   public class VersionCodes {
     field public static final int O = 26; // 0x1a
     field public static final int P = 28; // 0x1c
+    field public static final int Q = 29; // 0x1d
   }
 
   public final class ZygoteHooks {
@@ -880,10 +877,6 @@ package java.io {
 }
 
 package java.lang {
-
-  public final class Byte extends java.lang.Number implements java.lang.Comparable<java.lang.Byte> {
-    method public static String toHexString(byte, boolean);
-  }
 
   public final class Class<T> implements java.lang.reflect.AnnotatedElement java.lang.reflect.GenericDeclaration java.io.Serializable java.lang.reflect.Type {
     method @dalvik.annotation.optimization.FastNative public java.lang.reflect.Field[] getDeclaredFieldsUnchecked(boolean);
@@ -1163,11 +1156,15 @@ package libcore.net {
     method public static java.net.InetAddress parseNumericAddress(String);
   }
 
-  public final class MimeUtils {
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static String guessExtensionFromMimeType(String);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static String guessMimeTypeFromExtension(String);
-    method public static boolean hasExtension(String);
-    method public static boolean hasMimeType(String);
+  public abstract class MimeMap {
+    method public static boolean compareAndSetDefault(@NonNull libcore.net.MimeMap, @NonNull libcore.net.MimeMap);
+    method @NonNull public static libcore.net.MimeMap getDefault();
+    method @Nullable protected abstract String guessExtensionFromLowerCaseMimeType(@NonNull String);
+    method @Nullable public final String guessExtensionFromMimeType(@Nullable String);
+    method @Nullable public final String guessMimeTypeFromExtension(@Nullable String);
+    method @Nullable protected abstract String guessMimeTypeFromLowerCaseExtension(@NonNull String);
+    method public final boolean hasExtension(@Nullable String);
+    method public final boolean hasMimeType(@Nullable String);
   }
 
   public abstract class NetworkSecurityPolicy {
@@ -1304,11 +1301,15 @@ package libcore.util {
 
   public class HexEncoding {
     method public static byte[] decode(String) throws java.lang.IllegalArgumentException;
+    method public static byte[] decode(String, boolean) throws java.lang.IllegalArgumentException;
     method public static byte[] decode(char[]) throws java.lang.IllegalArgumentException;
     method public static byte[] decode(char[], boolean) throws java.lang.IllegalArgumentException;
     method public static char[] encode(byte[]);
+    method public static char[] encode(byte[], boolean);
     method public static char[] encode(byte[], int, int);
+    method public static String encodeToString(byte, boolean);
     method public static String encodeToString(byte[]);
+    method public static String encodeToString(byte[], boolean);
   }
 
   public class NativeAllocationRegistry {

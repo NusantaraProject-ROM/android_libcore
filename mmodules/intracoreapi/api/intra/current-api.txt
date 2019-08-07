@@ -1,12 +1,4 @@
 // Signature format: 2.0
-package android.system {
-
-  public final class ErrnoException extends java.lang.Exception {
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public java.net.SocketException rethrowAsSocketException() throws java.net.SocketException;
-  }
-
-}
-
 package com.android.org.conscrypt {
 
   @libcore.api.IntraCoreApi public class DESEDESecretKeyFactory extends javax.crypto.SecretKeyFactorySpi {
@@ -405,6 +397,7 @@ package dalvik.annotation.compat {
     method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract String expectedSignature() default "";
     method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract String implicitMember() default "";
     method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract int maxTargetSdk() default java.lang.Integer.MAX_VALUE;
+    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract String publicAlternatives() default "";
     method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract long trackingBug() default 0;
   }
 
@@ -434,6 +427,7 @@ package dalvik.system {
   @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public class VersionCodes {
     field @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static final int O = 26; // 0x1a
     field @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static final int P = 28; // 0x1c
+    field @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static final int Q = 29; // 0x1d
   }
 
 }

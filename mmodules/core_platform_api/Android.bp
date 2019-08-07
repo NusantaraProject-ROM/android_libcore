@@ -24,9 +24,9 @@ droidstubs {
     no_standard_libs: true,
 
     installable: false,
-    args: "--hide-annotation libcore.api.Hide "
-        + "--show-single-annotation libcore.api.CorePlatformApi "
-        + "--skip-annotation-instance-methods=false ",
+    args: "--hide-annotation libcore.api.Hide " +
+        "--show-single-annotation libcore.api.CorePlatformApi " +
+        "--skip-annotation-instance-methods=false ",
     merge_inclusion_annotations_dirs: ["ojluni-annotated-mmodule-stubs"],
 
     api_filename: "api.txt",
@@ -70,6 +70,10 @@ java_system_modules {
         // This one is not on device but it's needed when javac compiles code
         // containing lambdas.
         "core-lambda-stubs-for-system-modules",
+        // This one is not on device but it's needed when javac compiles code
+        // containing @Generated annotations produced by some code generation
+        // tools.
+        // See http://b/123891440.
+        "core-generated-annotation-stubs",
     ],
 }
-
