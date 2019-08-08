@@ -36,6 +36,7 @@ import java.io.ObjectStreamField;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import libcore.math.NativeBN;
 import sun.misc.DoubleConsts;
 import sun.misc.FloatConsts;
 import libcore.util.NonNull;
@@ -1510,14 +1511,19 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
 
         int xlen = mag.length;
 
-        if (val == this && xlen > MULTIPLY_SQUARE_THRESHOLD) {
-            return square();
-        }
-
+        // BEGIN Android-changed: Fall back to the boringssl implementation for
+        // large arguments.
         int ylen = val.mag.length;
 
-        if ((xlen < KARATSUBA_THRESHOLD) || (ylen < KARATSUBA_THRESHOLD)) {
-            int resultSign = signum == val.signum ? 1 : -1;
+        final int BORINGSSL_MUL_THRESHOLD = 50;
+
+        int resultSign = signum == val.signum ? 1 : -1;
+        if ((xlen < BORINGSSL_MUL_THRESHOLD) || (ylen < BORINGSSL_MUL_THRESHOLD)) {
+            if (val == this && xlen > MULTIPLY_SQUARE_THRESHOLD) {
+                // Helps less than boringssl fallback; prefer that.
+                return square();
+            }
+
             if (val.mag.length == 1) {
                 return multiplyByInt(mag,val.mag[0], resultSign);
             }
@@ -1529,6 +1535,20 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
             result = trustedStripLeadingZeroInts(result);
             return new BigInteger(result, resultSign);
         } else {
+            long xBN = 0, yBN = 0, resultBN = 0;
+            try {
+                xBN = bigEndInts2NewBN(mag, /* neg= */false);
+                yBN = bigEndInts2NewBN(val.mag, /* neg= */false);
+                resultBN = NativeBN.BN_new();
+                NativeBN.BN_mul(resultBN, xBN, yBN);
+                return new BigInteger(resultSign, bn2BigEndInts(resultBN));
+            } finally {
+                NativeBN.BN_free(xBN);
+                NativeBN.BN_free(yBN);
+                NativeBN.BN_free(resultBN);
+            }
+
+            /*
             if ((xlen < TOOM_COOK_THRESHOLD) && (ylen < TOOM_COOK_THRESHOLD)) {
                 return multiplyKaratsuba(this, val);
             } else {
@@ -1591,6 +1611,7 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
 
                 return multiplyToomCook3(this, val);
             }
+            */
         }
     }
 
@@ -2176,6 +2197,11 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
 
     // Division
 
+
+    // BEGIN Android-modified: Fall back to boringssl for large problems.
+    private static final int BORINGSSL_DIV_THRESHOLD = 40;
+    private static final int BORINGSSL_DIV_OFFSET = 20;
+
     /**
      * Returns a BigInteger whose value is {@code (this / val)}.
      *
@@ -2184,13 +2210,18 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
      * @throws ArithmeticException if {@code val} is zero.
      */
     @NonNull public BigInteger divide(@NonNull BigInteger val) {
-        if (val.mag.length < BURNIKEL_ZIEGLER_THRESHOLD ||
-                mag.length - val.mag.length < BURNIKEL_ZIEGLER_OFFSET) {
+        // if (val.mag.length < BURNIKEL_ZIEGLER_THRESHOLD ||
+        //        mag.length - val.mag.length < BURNIKEL_ZIEGLER_OFFSET) {
+        if (mag.length < BORINGSSL_DIV_THRESHOLD ||
+                mag.length - val.mag.length < BORINGSSL_DIV_OFFSET) {
             return divideKnuth(val);
         } else {
-            return divideBurnikelZiegler(val);
+            return divideAndRemainder(val)[0];
+            // return divideBurnikelZiegler(val);
         }
     }
+    // END Android-modified: Fall back to boringssl for large problems.
+
 
     /**
      * Returns a BigInteger whose value is {@code (this / val)} using an O(n^2) algorithm from Knuth.
@@ -2200,7 +2231,7 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
      * @throws ArithmeticException if {@code val} is zero.
      * @see MutableBigInteger#divideKnuth(MutableBigInteger, MutableBigInteger, boolean)
      */
-    @NonNull private BigInteger divideKnuth(BigInteger val) {
+    @NonNull private BigInteger divideKnuth(@NonNull BigInteger val) {
         MutableBigInteger q = new MutableBigInteger(),
                           a = new MutableBigInteger(this.mag),
                           b = new MutableBigInteger(val.mag);
@@ -2221,12 +2252,37 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
      * @throws ArithmeticException if {@code val} is zero.
      */
     @NonNull public BigInteger[] divideAndRemainder(@NonNull BigInteger val) {
-        if (val.mag.length < BURNIKEL_ZIEGLER_THRESHOLD ||
-                mag.length - val.mag.length < BURNIKEL_ZIEGLER_OFFSET) {
+        // BEGIN Android-modified: Fall back to boringssl for large problems.
+
+        // if (val.mag.length < BURNIKEL_ZIEGLER_THRESHOLD ||
+        //        mag.length - val.mag < BURNIKEL_ZIEGLER_OFFSET) {
+        if (val.mag.length < BORINGSSL_DIV_THRESHOLD ||
+                mag.length < BORINGSSL_DIV_OFFSET ||
+                mag.length - val.mag.length < BORINGSSL_DIV_OFFSET) {
             return divideAndRemainderKnuth(val);
         } else {
-            return divideAndRemainderBurnikelZiegler(val);
+            int quotSign = signum == val.signum ? 1 : -1;  // 0 divided doesn't get here.
+            long xBN = 0, yBN = 0, quotBN = 0, remBN = 0;
+            try {
+                xBN = bigEndInts2NewBN(mag, /* neg= */false);
+                yBN = bigEndInts2NewBN(val.mag, /* neg= */false);
+                quotBN = NativeBN.BN_new();
+                remBN = NativeBN.BN_new();
+                NativeBN.BN_div(quotBN, remBN, xBN, yBN);
+                BigInteger quotient = new BigInteger(quotSign, bn2BigEndInts(quotBN));
+                        // The sign of a zero quotient is fixed by the constructor.
+                BigInteger remainder = new BigInteger(signum, bn2BigEndInts(remBN));
+                BigInteger[] result = {quotient, remainder};
+                return result;
+            } finally {
+                NativeBN.BN_free(xBN);
+                NativeBN.BN_free(yBN);
+                NativeBN.BN_free(quotBN);
+                NativeBN.BN_free(remBN);
+            }
+            // return divideAndRemainderBurnikelZiegler(val);
         }
+        // END Android-modified: Fall back to boringssl for large problems.
     }
 
     /** Long division */
@@ -2250,12 +2306,17 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
      * @throws ArithmeticException if {@code val} is zero.
      */
     @NonNull public BigInteger remainder(@NonNull BigInteger val) {
-        if (val.mag.length < BURNIKEL_ZIEGLER_THRESHOLD ||
-                mag.length - val.mag.length < BURNIKEL_ZIEGLER_OFFSET) {
+        // BEGIN Android-modified: Fall back to boringssl for large problems.
+        // if (val.mag.length < BURNIKEL_ZIEGLER_THRESHOLD ||
+        //        mag.length - val.mag.length < BURNIKEL_ZIEGLER_OFFSET) {
+        if (val.mag.length < BORINGSSL_DIV_THRESHOLD ||
+                mag.length - val.mag.length < BORINGSSL_DIV_THRESHOLD) {
             return remainderKnuth(val);
         } else {
-            return remainderBurnikelZiegler(val);
+            return divideAndRemainder(val)[1];
+            // return remainderBurnikelZiegler(val);
         }
+        // END Android-modified: Fall back to boringssl for large problems.
     }
 
     /** Long division */
@@ -2565,6 +2626,35 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
         return (result.signum >= 0 ? result : result.add(m));
     }
 
+    // BEGIN Android-added: Support fallback to boringssl where it makes sense.
+    // The conversion itself takes linear time, so this only makes sense for largish superlinear
+    // operations.
+
+    private static int[] reverse(int[] arg) {
+      int len = arg.length;
+      int[] result = new int[len];
+      for (int i = 0; i < len; ++i) {
+        result[i] = arg[len - i - 1];
+      }
+      return result;
+    }
+
+    private static long /* BN */ bigEndInts2NewBN(int[] beArray, boolean neg) {
+      // The input is an array of ints arranged in big-endian order, i.e. most significant int
+      // first. BN deals with big-endian or little-endian byte arrays, so we need to reverse order.
+      int[] leArray = reverse(beArray);
+      long resultBN = NativeBN.BN_new();
+      NativeBN.litEndInts2bn(leArray, leArray.length, neg, resultBN);
+      return resultBN;
+    }
+
+    private int[] bn2BigEndInts(long bn) {
+      return reverse(NativeBN.bn2litEndInts(bn));
+    }
+
+    // END Android-added: Support fallback to boringssl.
+
+
     /**
      * Returns a BigInteger whose value is
      * <tt>(this<sup>exponent</sup> mod m)</tt>.  (Unlike {@code pow}, this
@@ -2602,6 +2692,28 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
         BigInteger base = (this.signum < 0 || this.compareTo(m) >= 0
                            ? this.mod(m) : this);
         BigInteger result;
+        // BEGIN Android-added: Fall back to the boringssl implementation, which
+        // is usually faster.
+        final int BORINGSSL_MOD_EXP_THRESHOLD = 3;
+        if (m.mag.length >= BORINGSSL_MOD_EXP_THRESHOLD) {
+            long baseBN = 0, expBN = 0, modBN = 0, resultBN = 0;
+            try {
+                baseBN = bigEndInts2NewBN(base.mag, /* neg= */false);
+                expBN = bigEndInts2NewBN(exponent.mag, /* neg= */false);
+                modBN = bigEndInts2NewBN(m.mag, /* neg= */false);
+                resultBN = NativeBN.BN_new();
+                NativeBN.BN_mod_exp(resultBN, baseBN, expBN, modBN);
+                result = new BigInteger(1, bn2BigEndInts(resultBN));
+                        // The sign of a zero result is fixed by the constructor.
+                return (invertResult ? result.modInverse(m) : result);
+            } finally {
+                NativeBN.BN_free(baseBN);
+                NativeBN.BN_free(expBN);
+                NativeBN.BN_free(modBN);
+                NativeBN.BN_free(resultBN);
+            }
+        }
+        // END Android-added: Fall back to the boringssl implementation.
         if (m.testBit(0)) { // odd modulus
             result = base.oddModPow(exponent, m);
         } else {
