@@ -21,9 +21,12 @@
 // class loader by libcore.java.lang.reflect.ParameterTest.
 java_library {
     name: "parameter-metadata-test",
+    visibility: [
+        "//libcore",
+    ],
     compile_dex: true,
     srcs: ["src/**/*.java"],
-    no_framework_libs: true,
+    sdk_version: "core_platform",
     javacflags: ["-parameters"],
     errorprone: {
         javacflags: ["-Xep:MissingOverride:OFF"],

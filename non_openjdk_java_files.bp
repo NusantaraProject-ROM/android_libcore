@@ -1,8 +1,13 @@
 filegroup {
     name: "non_openjdk_javadoc_files",
     srcs: [
+        "luni/src/main/java/android/compat/annotation/ChangeId.java",
+        "luni/src/main/java/android/compat/annotation/Disabled.java",
+        "luni/src/main/java/android/compat/annotation/EnabledAfter.java",
+        "luni/src/main/java/android/compat/Compatibility.java",
         "luni/src/main/java/android/system/ErrnoException.java",
         "luni/src/main/java/android/system/GaiException.java",
+        "luni/src/main/java/android/system/IcmpHeaders.java",
         "luni/src/main/java/android/system/Int32Ref.java",
         "luni/src/main/java/android/system/Int64Ref.java",
         "luni/src/main/java/android/system/NetlinkSocketAddress.java",
@@ -12,9 +17,7 @@ filegroup {
         "luni/src/main/java/android/system/StructAddrinfo.java",
         "luni/src/main/java/android/system/StructCapUserData.java",
         "luni/src/main/java/android/system/StructCapUserHeader.java",
-        "luni/src/main/java/android/system/StructFlock.java",
         "luni/src/main/java/android/system/StructGroupReq.java",
-        "luni/src/main/java/android/system/StructIcmpHdr.java",
         "luni/src/main/java/android/system/StructIfaddrs.java",
         "luni/src/main/java/android/system/StructLinger.java",
         "luni/src/main/java/android/system/StructPasswd.java",
@@ -191,6 +194,7 @@ filegroup {
         "luni/src/main/java/libcore/util/CoreLibraryDebug.java",
         "luni/src/main/java/libcore/util/DebugInfo.java",
         "luni/src/main/java/libcore/util/EmptyArray.java",
+        "luni/src/main/java/libcore/util/FP16.java",
         "luni/src/main/java/libcore/util/HexEncoding.java",
         "luni/src/main/java/libcore/util/NativeAllocationRegistry.java",
         "luni/src/main/java/libcore/util/NonNull.java",
@@ -294,6 +298,9 @@ filegroup {
 
 filegroup {
     name: "non_openjdk_java_files",
+    visibility: [
+        "//frameworks/base",
+    ],
     srcs: [
         "luni/src/main/java/java/net/AddressCache.java",
         "luni/src/main/java/libcore/icu/CollationKeyICU.java",

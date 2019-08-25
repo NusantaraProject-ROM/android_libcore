@@ -1445,7 +1445,6 @@ filegroup {
         "ojluni/src/main/java/sun/misc/CEStreamExhausted.java",
         "ojluni/src/main/java/sun/misc/CharacterDecoder.java",
         "ojluni/src/main/java/sun/misc/CharacterEncoder.java",
-        "ojluni/src/main/java/sun/misc/Cleaner.java",
         "ojluni/src/main/java/sun/misc/CompoundEnumeration.java",
         "ojluni/src/main/java/sun/misc/DoubleConsts.java",
         "ojluni/src/main/java/sun/misc/FileURLMapper.java",
@@ -1525,7 +1524,6 @@ filegroup {
         "ojluni/src/main/java/sun/nio/ch/DatagramSocketAdaptor.java",
         "ojluni/src/main/java/sun/nio/ch/DefaultAsynchronousChannelProvider.java",
         "ojluni/src/main/java/sun/nio/ch/DefaultSelectorProvider.java",
-        "ojluni/src/main/java/sun/nio/ch/DirectBuffer.java",
         "ojluni/src/main/java/sun/nio/ch/EPoll.java",
         "ojluni/src/main/java/sun/nio/ch/EPollPort.java",
         "ojluni/src/main/java/sun/nio/ch/ExtendedSocketOption.java",
@@ -1635,13 +1633,10 @@ filegroup {
         "ojluni/src/main/java/sun/security/jca/JCAUtil.java",
         "ojluni/src/main/java/sun/security/jca/ProviderConfig.java",
         "ojluni/src/main/java/sun/security/jca/ProviderList.java",
-        "ojluni/src/main/java/sun/security/jca/Providers.java",
         "ojluni/src/main/java/sun/security/jca/ServiceId.java",
-        "ojluni/src/main/java/sun/security/pkcs/PKCS7.java",
         "ojluni/src/main/java/sun/security/pkcs/PKCS8Key.java",
         "ojluni/src/main/java/sun/security/pkcs/PKCS9Attribute.java",
         "ojluni/src/main/java/sun/security/pkcs/PKCS9Attributes.java",
-        "ojluni/src/main/java/sun/security/pkcs/SignerInfo.java",
         "ojluni/src/main/java/sun/security/pkcs/SigningCertificateInfo.java",
         "ojluni/src/main/java/sun/security/provider/CertPathProvider.java",
         "ojluni/src/main/java/sun/security/provider/certpath/AdaptableX509CertSelector.java",
@@ -1807,6 +1802,9 @@ filegroup {
 // All classes, whether exposed in any API or not.
 filegroup {
     name: "openjdk_java_files",
+    visibility: [
+        "//frameworks/base",
+    ],
     srcs: [
         ":openjdk_javadoc_files",
         ":openjdk_mmodule_extra_files",
@@ -1829,7 +1827,7 @@ droidstubs {
     name: "openjdk-sdk-stubs-no-javadoc",
     srcs: [":openjdk_javadoc_files"],
     installable: false,
-    no_framework_libs: true,
+    sdk_version: "none",
     args: "--exclude-documentation-from-stubs",
 }
 
@@ -1844,7 +1842,7 @@ droidstubs {
         ":openjdk_mmodule_extra_files",
     ],
     installable: false,
-    no_framework_libs: true,
+    sdk_version: "none",
     args: "--exclude-documentation-from-stubs " +
         "--hide-annotation libcore.api.Hide ",
     merge_inclusion_annotations_dirs: ["ojluni-annotated-mmodule-stubs"],

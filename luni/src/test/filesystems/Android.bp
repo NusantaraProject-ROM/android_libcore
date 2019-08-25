@@ -18,10 +18,13 @@
 // class loader by libcore.java.nio.file.FileSystemsTest.
 java_library {
     name: "filesystemstest",
+    visibility: [
+        "//libcore",
+    ],
     compile_dex: true,
     srcs: ["src/**/*.java"],
     java_resource_dirs: ["resources"],
-    no_framework_libs: true,
+    sdk_version: "core_platform",
     errorprone: {
         javacflags: ["-Xep:MissingOverride:OFF"],
     },
