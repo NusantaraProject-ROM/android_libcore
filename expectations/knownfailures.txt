@@ -1403,6 +1403,13 @@
   ]
 },
 {
+  description: "OkHttp flaky test of functionality that's not used on Android",
+  bug: 138134183,
+  names: [
+    "com.squareup.okhttp.internal.framed.Spdy3ConnectionTest#serverSendsSettingsToClient"
+  ]
+},
+{
   description: "libcore.java.text.DecimalFormatSymbolsTest#test_getInstance_unknown_or_invalid_locale assumes fallback to locale other than en_US_POSIX.",
   bug: 17422813,
   names: [
@@ -1784,5 +1791,11 @@
   result: EXEC_FAILED,
   bug: 62408076,
   name: "libcore.java.lang.reflect.annotations.AnnotatedElementParameterTest#testImplicitConstructorParameters_singleAnnotation"
+},
+{
+  description: "Failing following zlib upgrade",
+  result: EXEC_FAILED,
+  bug: 135017266,
+  name: "libcore.java.util.zip.DeflateRegressionTest#deterministicOutput"
 }
 ]
