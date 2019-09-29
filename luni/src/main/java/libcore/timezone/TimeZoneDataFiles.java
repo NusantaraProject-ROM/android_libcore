@@ -27,7 +27,7 @@ import java.util.List;
 @libcore.api.CorePlatformApi
 public final class TimeZoneDataFiles {
     private static final String ANDROID_ROOT_ENV = "ANDROID_ROOT";
-    private static final String ANDROID_RUNTIME_ROOT_ENV = "ANDROID_RUNTIME_ROOT";
+    private static final String ANDROID_I18N_ROOT_ENV = "ANDROID_I18N_ROOT";
     private static final String ANDROID_TZDATA_ROOT_ENV = "ANDROID_TZDATA_ROOT";
     private static final String ANDROID_DATA_ENV = "ANDROID_DATA";
 
@@ -38,9 +38,7 @@ public final class TimeZoneDataFiles {
      * should be tried. See {@link #generateIcuDataPath()} for ICU files instead.
      * <ul>
      * <li>[0] - the location of the file in the /data partition (may not exist).</li>
-     * <li>[1] - the location of the file from the time zone module under /apex (may not exist).
-     * </li>
-     * <li>[2] - the location of the file from the runtime module under /apex (should exist).</li>
+     * <li>[1] - the location of the file from the time zone module under /apex (must exist).</li>
      * </ul>
      */
     // VisibleForTesting
@@ -48,7 +46,6 @@ public final class TimeZoneDataFiles {
         return new String[] {
                 getDataTimeZoneFile(fileName),
                 getTimeZoneModuleTzFile(fileName),
-                getRuntimeModuleTzFile(fileName),
         };
     }
 
@@ -71,27 +68,23 @@ public final class TimeZoneDataFiles {
         return getTimeZoneModuleFile("icu/" + fileName);
     }
 
+    // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797
+    @libcore.api.CorePlatformApi
+    public static String getTimeZoneModuleTzVersionFile() {
+        return getTimeZoneModuleTzFile(TzDataSetVersion.DEFAULT_FILE_NAME);
+    }
+
     // VisibleForTesting
     public static String getTimeZoneModuleFile(String fileName) {
         return System.getenv(ANDROID_TZDATA_ROOT_ENV) + "/etc/" + fileName;
     }
 
-    // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797
-    @libcore.api.CorePlatformApi
-    public static String getRuntimeModuleTzVersionFile() {
-        return getRuntimeModuleTzFile(TzDataSetVersion.DEFAULT_FILE_NAME);
+    public static String getI18nModuleIcuFile(String fileName) {
+        return getI18nModuleFile("icu/" + fileName);
     }
 
-    public static String getRuntimeModuleTzFile(String fileName) {
-        return getRuntimeModuleFile("tz/" + fileName);
-    }
-
-    public static String getRuntimeModuleIcuFile(String fileName) {
-        return getRuntimeModuleFile("icu/" + fileName);
-    }
-
-    private static String getRuntimeModuleFile(String fileName) {
-        return System.getenv(ANDROID_RUNTIME_ROOT_ENV) + "/etc/" + fileName;
+    private static String getI18nModuleFile(String fileName) {
+        return System.getenv(ANDROID_I18N_ROOT_ENV) + "/etc/" + fileName;
     }
 
     public static String getSystemTzFile(String fileName) {
@@ -104,6 +97,9 @@ public final class TimeZoneDataFiles {
 
     public static String generateIcuDataPath() {
         List<String> paths = new ArrayList<>(3);
+
+        // Note: This logic below should match the logic in IcuRegistration.cpp in external/icu/
+        // to ensure consistent behavior between ICU4C and ICU4J.
 
         // ICU should first look in ANDROID_DATA. This is used for (optional) time zone data
         // delivered by APK (https://source.android.com/devices/tech/config/timezone-rules)
@@ -118,10 +114,10 @@ public final class TimeZoneDataFiles {
         String timeZoneModuleIcuDataPath = getTimeZoneModuleIcuFile("");
         paths.add(timeZoneModuleIcuDataPath);
 
-        // ICU should always look in the runtime module path as this is where most of the data
+        // ICU should always look in the i18n module path as this is where most of the data
         // can be found.
-        String runtimeModuleIcuDataPath = getRuntimeModuleIcuFile("");
-        paths.add(runtimeModuleIcuDataPath);
+        String i18nModuleIcuDataPath = getI18nModuleIcuFile("");
+        paths.add(i18nModuleIcuDataPath);
 
         return String.join(":", paths);
     }

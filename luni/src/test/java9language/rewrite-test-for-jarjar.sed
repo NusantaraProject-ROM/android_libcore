@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Copyright (C) 2019 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,19 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-SHA=$1
+# This is a sed script that modifies Java source code in two ways.
 
-FIX=
-for file in $(git show --name-only --pretty=format: $SHA | grep -E "\.bp$"); do
-  if [[ -n "$(bpfmt -d <(git show $SHA:$file))" ]]; then
-    FIX="$FIX $file"
-  fi
-done
+# Replace libcore.internal with libcore.internal.repackaged in imports:
+s/import libcore.internal/import libcore.internal.repackaged/
 
-if [[ -n "$FIX" ]]; then
-  # Remove leading space.
-  FIX=$(echo $FIX)
-  echo -e "\e[1m\e[31mSome .bp files are incorrectly formatted, run the following commands to fix them:\e[0m"
-  echo -e "\e[1m\e[31m    bpfmt -w $FIX\e[0m"
-  exit 1
-fi
+# Replace Test with JarjarTest in class declarations.
+s/class ([A-Za-z0-9_]+)Test/class \1JarjarTest/

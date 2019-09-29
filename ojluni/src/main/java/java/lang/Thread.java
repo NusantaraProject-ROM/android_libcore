@@ -282,11 +282,11 @@ class Thread implements Runnable {
     private volatile Interruptible blocker;
     private final Object blockerLock = new Object();
 
-    /** Set the blocker field
-     * @hide
-     */
     // Android-changed: Make blockedOn() @hide public, for internal use.
-    // Used by java.nio.channels.spi.AbstractInterruptibleChannel.
+    // Changed comment to reflect usage on Android
+    /* Set the blocker field; used by java.nio.channels.spi.AbstractInterruptibleChannel
+     */
+    /** @hide */
     public void blockedOn(Interruptible b) {
         synchronized (blockerLock) {
             blocker = b;
@@ -662,8 +662,8 @@ class Thread implements Runnable {
         init(group, null, name, 0);
     }
 
+    // BEGIN Android-added: Private constructor - used by the runtime.
     /** @hide */
-    // Android-added: Private constructor - used by the runtime.
     Thread(ThreadGroup group, String name, int priority, boolean daemon) {
         this.group = group;
         this.group.addUnstarted();
@@ -692,6 +692,8 @@ class Thread implements Runnable {
                     parent.inheritableThreadLocals);
         }
     }
+    // END Android-added: Private constructor - used by the runtime.
+
 
     /**
      * Allocates a new {@code Thread} object. This constructor has the same
@@ -961,7 +963,7 @@ class Thread implements Runnable {
      *       for example), the <code>interrupt</code> method should be used to
      *       interrupt the wait.
      *       For more information, see
-     *       <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/concurrency/threadPrimitiveDeprecation.html">Why
+     *       <a href="{@docRoot}/../technotes/guides/concurrency/threadPrimitiveDeprecation.html">Why
      *       are Thread.stop, Thread.suspend and Thread.resume Deprecated?</a>.
      */
     @Deprecated
@@ -997,7 +999,7 @@ class Thread implements Runnable {
      *        could be used to generate exceptions that the target thread was
      *        not prepared to handle.
      *        For more information, see
-     *        <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/concurrency/threadPrimitiveDeprecation.html">Why
+     *        <a href="{@docRoot}/../technotes/guides/concurrency/threadPrimitiveDeprecation.html">Why
      *        are Thread.stop, Thread.suspend and Thread.resume Deprecated?</a>.
      */
     @Deprecated
@@ -1122,7 +1124,7 @@ class Thread implements Runnable {
     private native boolean isInterrupted(boolean ClearInterrupted);
     */
 
-    // Android-changed: Throw UnsupportedOperationException instead of NoSuchMethodError.
+    // BEGIN Android-changed: Throw UnsupportedOperationException instead of NoSuchMethodError.
     /**
      * Throws {@link UnsupportedOperationException}.
      *
@@ -1136,7 +1138,7 @@ class Thread implements Runnable {
      *     If another thread ever attempted to lock this resource, deadlock
      *     would result. Such deadlocks typically manifest themselves as
      *     "frozen" processes. For more information, see
-     *     <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/concurrency/threadPrimitiveDeprecation.html">
+     *     <a href="{@docRoot}/../technotes/guides/concurrency/threadPrimitiveDeprecation.html">
      *     Why are Thread.stop, Thread.suspend and Thread.resume Deprecated?</a>.
      * @throws UnsupportedOperationException always
      */
@@ -1144,6 +1146,7 @@ class Thread implements Runnable {
     public void destroy() {
         throw new UnsupportedOperationException();
     }
+    // END Android-changed: Throw UnsupportedOperationException instead of NoSuchMethodError.
 
     /**
      * Tests if this thread is alive. A thread is alive if it has
@@ -1169,7 +1172,7 @@ class Thread implements Runnable {
      *   monitor prior to calling <code>resume</code>, deadlock results.  Such
      *   deadlocks typically manifest themselves as "frozen" processes.
      *   For more information, see
-     *   <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/concurrency/threadPrimitiveDeprecation.html">Why
+     *   <a href="{@docRoot}/../technotes/guides/concurrency/threadPrimitiveDeprecation.html">Why
      *   are Thread.stop, Thread.suspend and Thread.resume Deprecated?</a>.
      * @throws UnsupportedOperationException always
      */
@@ -1189,7 +1192,7 @@ class Thread implements Runnable {
      * @deprecated This method exists solely for use with {@link #suspend},
      *     which has been deprecated because it is deadlock-prone.
      *     For more information, see
-     *     <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/concurrency/threadPrimitiveDeprecation.html">Why
+     *     <a href="{@docRoot}/../technotes/guides/concurrency/threadPrimitiveDeprecation.html">Why
      *     are Thread.stop, Thread.suspend and Thread.resume Deprecated?</a>.
      * @throws UnsupportedOperationException always
      */
@@ -2106,7 +2109,7 @@ class Thread implements Runnable {
         return defaultUncaughtExceptionHandler;
     }
 
-    // BEGIN Android-added: uncaughtExceptionPreHandler for use by platform.
+    // BEGIN Android-added: The concept of an uncaughtExceptionPreHandler for use by platform.
     // See http://b/29624607 for background information.
     // null unless explicitly set
     private static volatile UncaughtExceptionHandler uncaughtExceptionPreHandler;
@@ -2129,7 +2132,7 @@ class Thread implements Runnable {
     public static UncaughtExceptionHandler getUncaughtExceptionPreHandler() {
         return uncaughtExceptionPreHandler;
     }
-    // END Android-added: uncaughtExceptionPreHandler for use by platform.
+    // END Android-added: The concept of an uncaughtExceptionPreHandler for use by platform.
 
     /**
      * Returns the handler invoked when this thread abruptly terminates

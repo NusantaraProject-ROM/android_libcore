@@ -1,4 +1,34 @@
 // Signature format: 2.0
+package android.compat {
+
+  public final class Compatibility {
+    method public static boolean isChangeEnabled(@android.compat.annotation.ChangeId long);
+    method public static void reportChange(@android.compat.annotation.ChangeId long);
+    method public static void setCallbacks(android.compat.Compatibility.Callbacks);
+  }
+
+  public static class Compatibility.Callbacks {
+    ctor protected Compatibility.Callbacks();
+    method protected boolean isChangeEnabled(long);
+    method protected void reportChange(long);
+  }
+
+}
+
+package android.compat.annotation {
+
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD, java.lang.annotation.ElementType.PARAMETER}) public @interface ChangeId {
+  }
+
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD}) public @interface Disabled {
+  }
+
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD}) public @interface EnabledAfter {
+    method public abstract int targetSdkVersion();
+  }
+
+}
+
 package android.icu.impl {
 
   public class CalendarAstronomer {
@@ -20,25 +50,6 @@ package android.icu.text {
     method public String prepare(String, int) throws android.icu.text.StringPrepParseException;
     field public static final int DEFAULT = 0; // 0x0
     field public static final int RFC3920_RESOURCEPREP = 8; // 0x8
-  }
-
-  public class StringPrepParseException extends java.text.ParseException {
-    ctor public StringPrepParseException(String, int);
-    ctor public StringPrepParseException(String, int, String, int);
-    ctor public StringPrepParseException(String, int, String, int, int);
-    method public int getError();
-    field public static final int ACE_PREFIX_ERROR = 6; // 0x6
-    field public static final int BUFFER_OVERFLOW_ERROR = 9; // 0x9
-    field public static final int CHECK_BIDI_ERROR = 4; // 0x4
-    field public static final int DOMAIN_NAME_TOO_LONG_ERROR = 11; // 0xb
-    field public static final int ILLEGAL_CHAR_FOUND = 1; // 0x1
-    field public static final int INVALID_CHAR_FOUND = 0; // 0x0
-    field public static final int LABEL_TOO_LONG_ERROR = 8; // 0x8
-    field public static final int PROHIBITED_ERROR = 2; // 0x2
-    field public static final int STD3_ASCII_RULES_ERROR = 5; // 0x5
-    field public static final int UNASSIGNED_ERROR = 3; // 0x3
-    field public static final int VERIFICATION_ERROR = 7; // 0x7
-    field public static final int ZERO_LENGTH_LABEL = 10; // 0xa
   }
 
 }
@@ -105,6 +116,7 @@ package android.system {
   public final class OsConstants {
     method @dalvik.annotation.compat.UnsupportedAppUsage public static int CAP_TO_INDEX(int);
     method @dalvik.annotation.compat.UnsupportedAppUsage public static int CAP_TO_MASK(int);
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int ARPHRD_LOOPBACK;
     field @dalvik.annotation.compat.UnsupportedAppUsage public static final int ENONET;
     field @dalvik.annotation.compat.UnsupportedAppUsage public static final int EUSERS;
     field @dalvik.annotation.compat.UnsupportedAppUsage public static final int MAP_POPULATE;
@@ -124,8 +136,7 @@ package android.system {
   }
 
   public final class PacketSocketAddress extends java.net.SocketAddress {
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public PacketSocketAddress(short, int);
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public PacketSocketAddress(int, byte[]);
+    ctor public PacketSocketAddress(int, int, byte[]);
   }
 
   public final class StructCapUserData {
@@ -392,6 +403,22 @@ package com.android.org.bouncycastle.crypto {
   public abstract class PBEParametersGenerator {
     ctor protected PBEParametersGenerator();
     method public static byte[] PKCS5PasswordToBytes(char[]);
+  }
+
+}
+
+package com.android.org.bouncycastle.crypto.digests {
+
+  public abstract class GeneralDigest {
+    method public void finish();
+    method protected abstract void processBlock();
+    method public void update(byte[], int, int);
+  }
+
+  public class SHA1Digest extends com.android.org.bouncycastle.crypto.digests.GeneralDigest {
+    ctor public SHA1Digest();
+    method public int doFinal(byte[], int);
+    method protected void processBlock();
   }
 
 }
@@ -673,12 +700,12 @@ package dalvik.system {
 
   public final class CloseGuard {
     method @dalvik.annotation.compat.UnsupportedAppUsage public void close();
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static dalvik.system.CloseGuard get();
+    method @dalvik.annotation.compat.UnsupportedAppUsage(trackingBug=111170242) public static dalvik.system.CloseGuard get();
     method public static dalvik.system.CloseGuard.Reporter getReporter();
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void open(String);
+    method @dalvik.annotation.compat.UnsupportedAppUsage(trackingBug=111170242) public void open(String);
     method @dalvik.annotation.compat.UnsupportedAppUsage public static void setEnabled(boolean);
     method @dalvik.annotation.compat.UnsupportedAppUsage public static void setReporter(dalvik.system.CloseGuard.Reporter);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void warnIfOpen();
+    method @dalvik.annotation.compat.UnsupportedAppUsage(trackingBug=111170242) public void warnIfOpen();
   }
 
   public static interface CloseGuard.Reporter {
@@ -788,6 +815,7 @@ package dalvik.system {
 
   public final class VMRuntime {
     method @dalvik.annotation.compat.UnsupportedAppUsage @dalvik.annotation.optimization.FastNative public long addressOf(Object);
+    method public static void bootCompleted();
     method public void clampGrowthLimit();
     method @dalvik.annotation.compat.UnsupportedAppUsage public void clearGrowthLimit();
     method public static boolean didPruneDalvikCache();
@@ -823,7 +851,7 @@ package dalvik.system {
     method public static void setProcessDataDirectory(String);
     method public static void setProcessPackageName(String);
     method @dalvik.annotation.compat.UnsupportedAppUsage public float setTargetHeapUtilization(float);
-    method public void setTargetSdkVersion(int);
+    method @dalvik.annotation.compat.UnsupportedAppUsage(maxTargetSdk=0, publicAlternatives="Use the {@code targetSdkVersion}" + " attribute in the {@code uses-sdk} manifest tag instead.") public void setTargetSdkVersion(int);
     method public void startJitCompilation();
     method public void updateProcessState(int);
     method @dalvik.annotation.compat.UnsupportedAppUsage public String vmInstructionSet();
@@ -1114,7 +1142,6 @@ package libcore.io {
     method @dalvik.annotation.compat.UnsupportedAppUsage public static void closeQuietly(AutoCloseable);
     method @dalvik.annotation.compat.UnsupportedAppUsage public static void closeQuietly(java.io.FileDescriptor);
     method @dalvik.annotation.compat.UnsupportedAppUsage public static void closeQuietly(java.net.Socket);
-    method @Deprecated public static java.io.File createTemporaryDirectory(String);
     method @Deprecated public static void deleteContents(java.io.File) throws java.io.IOException;
     method @dalvik.annotation.compat.UnsupportedAppUsage public static byte[] readFileAsByteArray(String) throws java.io.IOException;
     method @dalvik.annotation.compat.UnsupportedAppUsage public static String readFileAsString(String) throws java.io.IOException;
@@ -1220,7 +1247,7 @@ package libcore.timezone {
   public final class TimeZoneDataFiles {
     method public static String getDataTimeZoneFile(String);
     method public static String getDataTimeZoneRootDir();
-    method public static String getRuntimeModuleTzVersionFile();
+    method public static String getTimeZoneModuleTzVersionFile();
   }
 
   public final class TimeZoneFinder {
@@ -1297,6 +1324,47 @@ package libcore.util {
     field @dalvik.annotation.compat.UnsupportedAppUsage public static final long[] LONG;
     field @dalvik.annotation.compat.UnsupportedAppUsage public static final Object[] OBJECT;
     field public static final String[] STRING;
+  }
+
+  public class FP16 {
+    method public static short ceil(short);
+    method public static int compare(short, short);
+    method public static boolean equals(short, short);
+    method public static short floor(short);
+    method public static boolean greater(short, short);
+    method public static boolean greaterEquals(short, short);
+    method public static boolean isInfinite(short);
+    method public static boolean isNaN(short);
+    method public static boolean isNormalized(short);
+    method public static boolean less(short, short);
+    method public static boolean lessEquals(short, short);
+    method public static short max(short, short);
+    method public static short min(short, short);
+    method public static short rint(short);
+    method public static float toFloat(short);
+    method public static short toHalf(float);
+    method public static String toHexString(short);
+    method public static short trunc(short);
+    field public static final short EPSILON = 5120; // 0x1400
+    field public static final int EXPONENT_BIAS = 15; // 0xf
+    field public static final int EXPONENT_SHIFT = 10; // 0xa
+    field public static final int EXPONENT_SIGNIFICAND_MASK = 32767; // 0x7fff
+    field public static final short LOWEST_VALUE = -1025; // 0xfffffbff
+    field public static final int MAX_EXPONENT = 15; // 0xf
+    field public static final short MAX_VALUE = 31743; // 0x7bff
+    field public static final int MIN_EXPONENT = -14; // 0xfffffff2
+    field public static final short MIN_NORMAL = 1024; // 0x400
+    field public static final short MIN_VALUE = 1; // 0x1
+    field public static final short NEGATIVE_INFINITY = -1024; // 0xfffffc00
+    field public static final short NEGATIVE_ZERO = -32768; // 0xffff8000
+    field public static final short NaN = 32256; // 0x7e00
+    field public static final short POSITIVE_INFINITY = 31744; // 0x7c00
+    field public static final short POSITIVE_ZERO = 0; // 0x0
+    field public static final int SHIFTED_EXPONENT_MASK = 31; // 0x1f
+    field public static final int SIGNIFICAND_MASK = 1023; // 0x3ff
+    field public static final int SIGN_MASK = 32768; // 0x8000
+    field public static final int SIGN_SHIFT = 15; // 0xf
+    field public static final int SIZE = 16; // 0x10
   }
 
   public class HexEncoding {
