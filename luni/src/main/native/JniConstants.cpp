@@ -61,7 +61,6 @@ jclass localeDataClass;
 jclass longClass;
 jclass netlinkSocketAddressClass;
 jclass packetSocketAddressClass;
-jclass patternSyntaxExceptionClass;
 jclass stringClass;
 jclass structAddrinfoClass;
 jclass structGroupReqClass;
@@ -108,7 +107,6 @@ void EnsureJniConstantsInitialized(JNIEnv* env) {
     longClass = findClass(env, "java/lang/Long");
     netlinkSocketAddressClass = findClass(env, "android/system/NetlinkSocketAddress");
     packetSocketAddressClass = findClass(env, "android/system/PacketSocketAddress");
-    patternSyntaxExceptionClass = findClass(env, "java/util/regex/PatternSyntaxException");
     stringClass = findClass(env, "java/lang/String");
     structAddrinfoClass = findClass(env, "android/system/StructAddrinfo");
     structGroupReqClass = findClass(env, "android/system/StructGroupReq");
@@ -134,6 +132,15 @@ void JniConstants::Initialize(JNIEnv* env) {
 }
 
 void JniConstants::Invalidate() {
+    // This method is called when a new runtime instance is created. There is no
+    // notification of a runtime instance being destroyed in the JNI interface
+    // so we piggyback on creation. Since only one runtime is supported at a
+    // time, we know the constants are invalid when JNI_CreateJavaVM() is
+    // called.
+    //
+    // Clean shutdown would require calling DeleteGlobalRef() for each of the
+    // class references, but JavaVM is unavailable because ART only calls this
+    // once all threads are unregistered.
     std::lock_guard guard(g_constants_mutex);
     g_constants_valid = false;
 }
@@ -221,11 +228,6 @@ jclass JniConstants::GetNetlinkSocketAddressClass(JNIEnv* env) {
 jclass JniConstants::GetPacketSocketAddressClass(JNIEnv* env) {
     EnsureJniConstantsInitialized(env);
     return packetSocketAddressClass;
-}
-
-jclass JniConstants::GetPatternSyntaxExceptionClass(JNIEnv* env) {
-    EnsureJniConstantsInitialized(env);
-    return patternSyntaxExceptionClass;
 }
 
 jclass JniConstants::GetStringClass(JNIEnv* env) {
