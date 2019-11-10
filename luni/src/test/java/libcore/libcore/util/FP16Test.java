@@ -26,71 +26,64 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class FP16Test extends TestCase {
-    private static void assertShortEquals(short a, short b) {
-        assertEquals((long) (a & 0xffff), (long) (b & 0xffff));
-    }
-
-    private static void assertShortEquals(int a, short b) {
-        assertEquals((long) (a & 0xffff), (long) (b & 0xffff));
-    }
 
     public void testSingleToHalf() {
         // Zeroes, NaN and infinities
-        assertShortEquals(POSITIVE_ZERO, toHalf(0.0f));
-        assertShortEquals(NEGATIVE_ZERO, toHalf(-0.0f));
-        assertShortEquals(NaN, toHalf(Float.NaN));
-        assertShortEquals(POSITIVE_INFINITY, toHalf(Float.POSITIVE_INFINITY));
-        assertShortEquals(NEGATIVE_INFINITY, toHalf(Float.NEGATIVE_INFINITY));
+        assertEquals(POSITIVE_ZERO, toHalf(0.0f));
+        assertEquals(NEGATIVE_ZERO, toHalf(-0.0f));
+        assertEquals(NaN, toHalf(Float.NaN));
+        assertEquals(POSITIVE_INFINITY, toHalf(Float.POSITIVE_INFINITY));
+        assertEquals(NEGATIVE_INFINITY, toHalf(Float.NEGATIVE_INFINITY));
         // Known values
-        assertShortEquals(0x3c01, toHalf(1.0009765625f));
-        assertShortEquals(0xc000, toHalf(-2.0f));
-        assertShortEquals(0x0400, toHalf(6.10352e-5f));
-        assertShortEquals(0x7bff, toHalf(65504.0f));
-        assertShortEquals(0x3555, toHalf(1.0f / 3.0f));
+        assertEquals((short) 0x3c01, toHalf(1.0009765625f));
+        assertEquals((short) 0xc000, toHalf(-2.0f));
+        assertEquals((short) 0x0400, toHalf(6.10352e-5f));
+        assertEquals((short) 0x7bff, toHalf(65504.0f));
+        assertEquals((short) 0x3555, toHalf(1.0f / 3.0f));
         // Subnormals
-        assertShortEquals(0x03ff, toHalf(6.09756e-5f));
-        assertShortEquals(MIN_VALUE, toHalf(5.96046e-8f));
-        assertShortEquals(0x83ff, toHalf(-6.09756e-5f));
-        assertShortEquals(0x8001, toHalf(-5.96046e-8f));
+        assertEquals((short) 0x03ff, toHalf(6.09756e-5f));
+        assertEquals(MIN_VALUE, toHalf(5.96046e-8f));
+        assertEquals((short) 0x83ff, toHalf(-6.09756e-5f));
+        assertEquals((short) 0x8001, toHalf(-5.96046e-8f));
         // Subnormals (flushed to +/-0)
-        assertShortEquals(POSITIVE_ZERO, toHalf(5.96046e-9f));
-        assertShortEquals(NEGATIVE_ZERO, toHalf(-5.96046e-9f));
+        assertEquals(POSITIVE_ZERO, toHalf(5.96046e-9f));
+        assertEquals(NEGATIVE_ZERO, toHalf(-5.96046e-9f));
         // Test for values that overflow the mantissa bits into exp bits
-        assertShortEquals(0x1000, toHalf(Float.intBitsToFloat(0x39fff000)));
-        assertShortEquals(0x0400, toHalf(Float.intBitsToFloat(0x387fe000)));
+        assertEquals((short) 0x1000, toHalf(Float.intBitsToFloat(0x39fff000)));
+        assertEquals((short) 0x0400, toHalf(Float.intBitsToFloat(0x387fe000)));
         // Floats with absolute value above +/-65519 are rounded to +/-inf
         // when using round-to-even
-        assertShortEquals(0x7bff, toHalf(65519.0f));
-        assertShortEquals(0x7bff, toHalf(65519.9f));
-        assertShortEquals(POSITIVE_INFINITY, toHalf(65520.0f));
-        assertShortEquals(NEGATIVE_INFINITY, toHalf(-65520.0f));
+        assertEquals((short) 0x7bff, toHalf(65519.0f));
+        assertEquals((short) 0x7bff, toHalf(65519.9f));
+        assertEquals(POSITIVE_INFINITY, toHalf(65520.0f));
+        assertEquals(NEGATIVE_INFINITY, toHalf(-65520.0f));
         // Check if numbers are rounded to nearest even when they
         // cannot be accurately represented by Half
-        assertShortEquals(0x6800, toHalf(2049.0f));
-        assertShortEquals(0x6c00, toHalf(4098.0f));
-        assertShortEquals(0x7000, toHalf(8196.0f));
-        assertShortEquals(0x7400, toHalf(16392.0f));
-        assertShortEquals(0x7800, toHalf(32784.0f));
+        assertEquals((short) 0x6800, toHalf(2049.0f));
+        assertEquals((short) 0x6c00, toHalf(4098.0f));
+        assertEquals((short) 0x7000, toHalf(8196.0f));
+        assertEquals((short) 0x7400, toHalf(16392.0f));
+        assertEquals((short) 0x7800, toHalf(32784.0f));
     }
 
     public void testHalfToSingle() {
         // Zeroes, NaN and infinities
-        assertEquals(0.0f, toFloat(toHalf(0.0f)), 1e-6f);
-        assertEquals(-0.0f, toFloat(toHalf(-0.0f)), 1e-6f);
-        assertEquals(Float.NaN, toFloat(toHalf(Float.NaN)), 1e-6f);
-        assertEquals(Float.POSITIVE_INFINITY, toFloat(toHalf(Float.POSITIVE_INFINITY)), 1e-6f);
-        assertEquals(Float.NEGATIVE_INFINITY, toFloat(toHalf(Float.NEGATIVE_INFINITY)), 1e-6f);
+        assertEquals(0.0f, toFloat(toHalf(0.0f)), 0.0f);
+        assertEquals(-0.0f, toFloat(toHalf(-0.0f)), 0.0f);
+        assertEquals(Float.NaN, toFloat(toHalf(Float.NaN)), 0.0f);
+        assertEquals(Float.POSITIVE_INFINITY, toFloat(toHalf(Float.POSITIVE_INFINITY)), 0.0f);
+        assertEquals(Float.NEGATIVE_INFINITY, toFloat(toHalf(Float.NEGATIVE_INFINITY)), 0.0f);
         // Known values
-        assertEquals(1.0009765625f, toFloat(toHalf(1.0009765625f)), 1e-6f);
-        assertEquals(-2.0f, toFloat(toHalf(-2.0f)), 1e-6f);
-        assertEquals(6.1035156e-5f, toFloat(toHalf(6.10352e-5f)), 1e-6f); // Inexact
-        assertEquals(65504.0f, toFloat(toHalf(65504.0f)), 1e-6f);
-        assertEquals(0.33325195f, toFloat(toHalf(1.0f / 3.0f)), 1e-6f); // Inexact
+        assertEquals(1.0009765625f, toFloat(toHalf(1.0009765625f)), 0.0f);
+        assertEquals(-2.0f, toFloat(toHalf(-2.0f)), 0.0f);
+        assertEquals(6.1035156e-5f, toFloat(toHalf(6.10352e-5f)), 0.0f); // Inexact
+        assertEquals(65504.0f, toFloat(toHalf(65504.0f)), 0.0f);
+        assertEquals(0.33325195f, toFloat(toHalf(1.0f / 3.0f)), 0.0f); // Inexact
         // Denormals (flushed to +/-0)
-        assertEquals(6.097555e-5f, toFloat(toHalf(6.09756e-5f)), 1e-6f);
-        assertEquals(5.9604645e-8f, toFloat(toHalf(5.96046e-8f)), 1e-9f);
-        assertEquals(-6.097555e-5f, toFloat(toHalf(-6.09756e-5f)), 1e-6f);
-        assertEquals(-5.9604645e-8f, toFloat(toHalf(-5.96046e-8f)), 1e-9f);
+        assertEquals(6.097555e-5f, toFloat(toHalf(6.09756e-5f)), 0.0f);
+        assertEquals(5.9604645e-8f, toFloat(toHalf(5.96046e-8f)), 0.0f);
+        assertEquals(-6.097555e-5f, toFloat(toHalf(-6.09756e-5f)), 0.0f);
+        assertEquals(-5.9604645e-8f, toFloat(toHalf(-5.96046e-8f)), 0.0f);
     }
 
     public void testHexString() {
@@ -158,22 +151,22 @@ public class FP16Test extends TestCase {
     }
 
     public void testCeil() {
-        assertShortEquals(POSITIVE_INFINITY, FP16.ceil(POSITIVE_INFINITY));
-        assertShortEquals(NEGATIVE_INFINITY, FP16.ceil(NEGATIVE_INFINITY));
-        assertShortEquals(POSITIVE_ZERO, FP16.ceil(POSITIVE_ZERO));
-        assertShortEquals(NEGATIVE_ZERO, FP16.ceil(NEGATIVE_ZERO));
-        assertShortEquals(NaN, FP16.ceil(NaN));
-        assertShortEquals(LOWEST_VALUE, FP16.ceil(LOWEST_VALUE));
-        assertEquals(1.0f, toFloat(FP16.ceil(MIN_NORMAL)), 1e-6f);
-        assertEquals(1.0f, toFloat(FP16.ceil((short) 0x3ff)), 1e-6f);
-        assertEquals(1.0f, toFloat(FP16.ceil(toHalf(0.2f))), 1e-6f);
-        assertShortEquals(NEGATIVE_ZERO, FP16.ceil(toHalf(-0.2f)));
-        assertEquals(1.0f, toFloat(FP16.ceil(toHalf(0.7f))), 1e-6f);
-        assertShortEquals(NEGATIVE_ZERO, FP16.ceil(toHalf(-0.7f)));
-        assertEquals(125.0f, toFloat(FP16.ceil(toHalf(124.7f))), 1e-6f);
-        assertEquals(-124.0f, toFloat(FP16.ceil(toHalf(-124.7f))), 1e-6f);
-        assertEquals(125.0f, toFloat(FP16.ceil(toHalf(124.2f))), 1e-6f);
-        assertEquals(-124.0f, toFloat(FP16.ceil(toHalf(-124.2f))), 1e-6f);
+        assertEquals(POSITIVE_INFINITY, FP16.ceil(POSITIVE_INFINITY));
+        assertEquals(NEGATIVE_INFINITY, FP16.ceil(NEGATIVE_INFINITY));
+        assertEquals(POSITIVE_ZERO, FP16.ceil(POSITIVE_ZERO));
+        assertEquals(NEGATIVE_ZERO, FP16.ceil(NEGATIVE_ZERO));
+        assertEquals(NaN, FP16.ceil(NaN));
+        assertEquals(LOWEST_VALUE, FP16.ceil(LOWEST_VALUE));
+        assertEquals(1.0f, toFloat(FP16.ceil(MIN_NORMAL)), 0.0f);
+        assertEquals(1.0f, toFloat(FP16.ceil((short) 0x3ff)), 0.0f);
+        assertEquals(1.0f, toFloat(FP16.ceil(toHalf(0.2f))), 0.0f);
+        assertEquals(NEGATIVE_ZERO, FP16.ceil(toHalf(-0.2f)));
+        assertEquals(1.0f, toFloat(FP16.ceil(toHalf(0.7f))), 0.0f);
+        assertEquals(NEGATIVE_ZERO, FP16.ceil(toHalf(-0.7f)));
+        assertEquals(125.0f, toFloat(FP16.ceil(toHalf(124.7f))), 0.0f);
+        assertEquals(-124.0f, toFloat(FP16.ceil(toHalf(-124.7f))), 0.0f);
+        assertEquals(125.0f, toFloat(FP16.ceil(toHalf(124.2f))), 0.0f);
+        assertEquals(-124.0f, toFloat(FP16.ceil(toHalf(-124.2f))), 0.0f);
     }
 
     public void testEquals() {
@@ -191,61 +184,61 @@ public class FP16Test extends TestCase {
     }
 
     public void testFloor() {
-        assertShortEquals(POSITIVE_INFINITY, FP16.floor(POSITIVE_INFINITY));
-        assertShortEquals(NEGATIVE_INFINITY, FP16.floor(NEGATIVE_INFINITY));
-        assertShortEquals(POSITIVE_ZERO, FP16.floor(POSITIVE_ZERO));
-        assertShortEquals(NEGATIVE_ZERO, FP16.floor(NEGATIVE_ZERO));
-        assertShortEquals(NaN, FP16.floor(NaN));
-        assertShortEquals(LOWEST_VALUE, FP16.floor(LOWEST_VALUE));
-        assertShortEquals(POSITIVE_ZERO, FP16.floor(MIN_NORMAL));
-        assertShortEquals(POSITIVE_ZERO, FP16.floor((short) 0x3ff));
-        assertShortEquals(POSITIVE_ZERO, FP16.floor(toHalf(0.2f)));
-        assertEquals(-1.0f, toFloat(FP16.floor(toHalf(-0.2f))), 1e-6f);
-        assertEquals(-1.0f, toFloat(FP16.floor(toHalf(-0.7f))), 1e-6f);
-        assertShortEquals(POSITIVE_ZERO, FP16.floor(toHalf(0.7f)));
-        assertEquals(124.0f, toFloat(FP16.floor(toHalf(124.7f))), 1e-6f);
-        assertEquals(-125.0f, toFloat(FP16.floor(toHalf(-124.7f))), 1e-6f);
-        assertEquals(124.0f, toFloat(FP16.floor(toHalf(124.2f))), 1e-6f);
-        assertEquals(-125.0f, toFloat(FP16.floor(toHalf(-124.2f))), 1e-6f);
+        assertEquals(POSITIVE_INFINITY, FP16.floor(POSITIVE_INFINITY));
+        assertEquals(NEGATIVE_INFINITY, FP16.floor(NEGATIVE_INFINITY));
+        assertEquals(POSITIVE_ZERO, FP16.floor(POSITIVE_ZERO));
+        assertEquals(NEGATIVE_ZERO, FP16.floor(NEGATIVE_ZERO));
+        assertEquals(NaN, FP16.floor(NaN));
+        assertEquals(LOWEST_VALUE, FP16.floor(LOWEST_VALUE));
+        assertEquals(POSITIVE_ZERO, FP16.floor(MIN_NORMAL));
+        assertEquals(POSITIVE_ZERO, FP16.floor((short) 0x3ff));
+        assertEquals(POSITIVE_ZERO, FP16.floor(toHalf(0.2f)));
+        assertEquals(-1.0f, toFloat(FP16.floor(toHalf(-0.2f))), 0.0f);
+        assertEquals(-1.0f, toFloat(FP16.floor(toHalf(-0.7f))), 0.0f);
+        assertEquals(POSITIVE_ZERO, FP16.floor(toHalf(0.7f)));
+        assertEquals(124.0f, toFloat(FP16.floor(toHalf(124.7f))), 0.0f);
+        assertEquals(-125.0f, toFloat(FP16.floor(toHalf(-124.7f))), 0.0f);
+        assertEquals(124.0f, toFloat(FP16.floor(toHalf(124.2f))), 0.0f);
+        assertEquals(-125.0f, toFloat(FP16.floor(toHalf(-124.2f))), 0.0f);
     }
 
     public void testRint() {
-        assertShortEquals(POSITIVE_INFINITY, FP16.rint(POSITIVE_INFINITY));
-        assertShortEquals(NEGATIVE_INFINITY, FP16.rint(NEGATIVE_INFINITY));
-        assertShortEquals(POSITIVE_ZERO, FP16.rint(POSITIVE_ZERO));
-        assertShortEquals(NEGATIVE_ZERO, FP16.rint(NEGATIVE_ZERO));
-        assertShortEquals(NaN, FP16.rint(NaN));
-        assertShortEquals(LOWEST_VALUE, FP16.rint(LOWEST_VALUE));
-        assertShortEquals(POSITIVE_ZERO, FP16.rint(MIN_VALUE));
-        assertShortEquals(POSITIVE_ZERO, FP16.rint((short) 0x200));
-        assertShortEquals(POSITIVE_ZERO, FP16.rint((short) 0x3ff));
-        assertShortEquals(POSITIVE_ZERO, FP16.rint(toHalf(0.2f)));
-        assertShortEquals(NEGATIVE_ZERO, FP16.rint(toHalf(-0.2f)));
-        assertEquals(1.0f, toFloat(FP16.rint(toHalf(0.7f))), 1e-6f);
-        assertEquals(-1.0f, toFloat(FP16.rint(toHalf(-0.7f))), 1e-6f);
-        assertEquals(1.0f, toFloat(FP16.rint(toHalf(0.5f))), 1e-6f);
-        assertEquals(-1.0f, toFloat(FP16.rint(toHalf(-0.5f))), 1e-6f);
-        assertEquals(125.0f, toFloat(FP16.rint(toHalf(124.7f))), 1e-6f);
-        assertEquals(-125.0f, toFloat(FP16.rint(toHalf(-124.7f))), 1e-6f);
-        assertEquals(124.0f, toFloat(FP16.rint(toHalf(124.2f))), 1e-6f);
-        assertEquals(-124.0f, toFloat(FP16.rint(toHalf(-124.2f))), 1e-6f);
+        assertEquals(POSITIVE_INFINITY, FP16.rint(POSITIVE_INFINITY));
+        assertEquals(NEGATIVE_INFINITY, FP16.rint(NEGATIVE_INFINITY));
+        assertEquals(POSITIVE_ZERO, FP16.rint(POSITIVE_ZERO));
+        assertEquals(NEGATIVE_ZERO, FP16.rint(NEGATIVE_ZERO));
+        assertEquals(NaN, FP16.rint(NaN));
+        assertEquals(LOWEST_VALUE, FP16.rint(LOWEST_VALUE));
+        assertEquals(POSITIVE_ZERO, FP16.rint(MIN_VALUE));
+        assertEquals(POSITIVE_ZERO, FP16.rint((short) 0x200));
+        assertEquals(POSITIVE_ZERO, FP16.rint((short) 0x3ff));
+        assertEquals(POSITIVE_ZERO, FP16.rint(toHalf(0.2f)));
+        assertEquals(NEGATIVE_ZERO, FP16.rint(toHalf(-0.2f)));
+        assertEquals(1.0f, toFloat(FP16.rint(toHalf(0.7f))), 0.0f);
+        assertEquals(-1.0f, toFloat(FP16.rint(toHalf(-0.7f))), 0.0f);
+        assertEquals(1.0f, toFloat(FP16.rint(toHalf(0.5f))), 0.0f);
+        assertEquals(-1.0f, toFloat(FP16.rint(toHalf(-0.5f))), 0.0f);
+        assertEquals(125.0f, toFloat(FP16.rint(toHalf(124.7f))), 0.0f);
+        assertEquals(-125.0f, toFloat(FP16.rint(toHalf(-124.7f))), 0.0f);
+        assertEquals(124.0f, toFloat(FP16.rint(toHalf(124.2f))), 0.0f);
+        assertEquals(-124.0f, toFloat(FP16.rint(toHalf(-124.2f))), 0.0f);
     }
 
     public void testTrunc() {
-        assertShortEquals(POSITIVE_INFINITY, FP16.trunc(POSITIVE_INFINITY));
-        assertShortEquals(NEGATIVE_INFINITY, FP16.trunc(NEGATIVE_INFINITY));
-        assertShortEquals(POSITIVE_ZERO, FP16.trunc(POSITIVE_ZERO));
-        assertShortEquals(NEGATIVE_ZERO, FP16.trunc(NEGATIVE_ZERO));
-        assertShortEquals(NaN, FP16.trunc(NaN));
-        assertShortEquals(LOWEST_VALUE, FP16.trunc(LOWEST_VALUE));
-        assertShortEquals(POSITIVE_ZERO, FP16.trunc(toHalf(0.2f)));
-        assertShortEquals(NEGATIVE_ZERO, FP16.trunc(toHalf(-0.2f)));
-        assertEquals(0.0f, toFloat(FP16.trunc(toHalf(0.7f))), 1e-6f);
-        assertEquals(-0.0f, toFloat(FP16.trunc(toHalf(-0.7f))), 1e-6f);
-        assertEquals(124.0f, toFloat(FP16.trunc(toHalf(124.7f))), 1e-6f);
-        assertEquals(-124.0f, toFloat(FP16.trunc(toHalf(-124.7f))), 1e-6f);
-        assertEquals(124.0f, toFloat(FP16.trunc(toHalf(124.2f))), 1e-6f);
-        assertEquals(-124.0f, toFloat(FP16.trunc(toHalf(-124.2f))), 1e-6f);
+        assertEquals(POSITIVE_INFINITY, FP16.trunc(POSITIVE_INFINITY));
+        assertEquals(NEGATIVE_INFINITY, FP16.trunc(NEGATIVE_INFINITY));
+        assertEquals(POSITIVE_ZERO, FP16.trunc(POSITIVE_ZERO));
+        assertEquals(NEGATIVE_ZERO, FP16.trunc(NEGATIVE_ZERO));
+        assertEquals(NaN, FP16.trunc(NaN));
+        assertEquals(LOWEST_VALUE, FP16.trunc(LOWEST_VALUE));
+        assertEquals(POSITIVE_ZERO, FP16.trunc(toHalf(0.2f)));
+        assertEquals(NEGATIVE_ZERO, FP16.trunc(toHalf(-0.2f)));
+        assertEquals(0.0f, toFloat(FP16.trunc(toHalf(0.7f))), 0.0f);
+        assertEquals(-0.0f, toFloat(FP16.trunc(toHalf(-0.7f))), 0.0f);
+        assertEquals(124.0f, toFloat(FP16.trunc(toHalf(124.7f))), 0.0f);
+        assertEquals(-124.0f, toFloat(FP16.trunc(toHalf(-124.7f))), 0.0f);
+        assertEquals(124.0f, toFloat(FP16.trunc(toHalf(124.2f))), 0.0f);
+        assertEquals(-124.0f, toFloat(FP16.trunc(toHalf(-124.2f))), 0.0f);
     }
 
     public void testLess() {
@@ -333,31 +326,31 @@ public class FP16Test extends TestCase {
     }
 
     public void testMin() {
-        assertShortEquals(NEGATIVE_INFINITY, FP16.min(POSITIVE_INFINITY, NEGATIVE_INFINITY));
-        assertShortEquals(NEGATIVE_ZERO, FP16.min(POSITIVE_ZERO, NEGATIVE_ZERO));
-        assertShortEquals(NaN, FP16.min(NaN, LOWEST_VALUE));
-        assertShortEquals(NaN, FP16.min(LOWEST_VALUE, NaN));
-        assertShortEquals(NEGATIVE_INFINITY, FP16.min(NEGATIVE_INFINITY, LOWEST_VALUE));
-        assertShortEquals(MAX_VALUE, FP16.min(POSITIVE_INFINITY, MAX_VALUE));
-        assertShortEquals(MIN_VALUE, FP16.min(MIN_VALUE, MIN_NORMAL));
-        assertShortEquals(POSITIVE_ZERO, FP16.min(MIN_VALUE, POSITIVE_ZERO));
-        assertShortEquals(POSITIVE_ZERO, FP16.min(MIN_NORMAL, POSITIVE_ZERO));
-        assertShortEquals(toHalf(-3.456f), FP16.min(toHalf(-3.456f), toHalf(-3.453f)));
-        assertShortEquals(toHalf(3.453f), FP16.min(toHalf(3.456f), toHalf(3.453f)));
+        assertEquals(NEGATIVE_INFINITY, FP16.min(POSITIVE_INFINITY, NEGATIVE_INFINITY));
+        assertEquals(NEGATIVE_ZERO, FP16.min(POSITIVE_ZERO, NEGATIVE_ZERO));
+        assertEquals(NaN, FP16.min(NaN, LOWEST_VALUE));
+        assertEquals(NaN, FP16.min(LOWEST_VALUE, NaN));
+        assertEquals(NEGATIVE_INFINITY, FP16.min(NEGATIVE_INFINITY, LOWEST_VALUE));
+        assertEquals(MAX_VALUE, FP16.min(POSITIVE_INFINITY, MAX_VALUE));
+        assertEquals(MIN_VALUE, FP16.min(MIN_VALUE, MIN_NORMAL));
+        assertEquals(POSITIVE_ZERO, FP16.min(MIN_VALUE, POSITIVE_ZERO));
+        assertEquals(POSITIVE_ZERO, FP16.min(MIN_NORMAL, POSITIVE_ZERO));
+        assertEquals(toHalf(-3.456f), FP16.min(toHalf(-3.456f), toHalf(-3.453f)));
+        assertEquals(toHalf(3.453f), FP16.min(toHalf(3.456f), toHalf(3.453f)));
     }
 
     public void testMax() {
-        assertShortEquals(POSITIVE_INFINITY, FP16.max(POSITIVE_INFINITY, NEGATIVE_INFINITY));
-        assertShortEquals(POSITIVE_ZERO, FP16.max(POSITIVE_ZERO, NEGATIVE_ZERO));
-        assertShortEquals(NaN, FP16.max(NaN, MAX_VALUE));
-        assertShortEquals(NaN, FP16.max(MAX_VALUE, NaN));
-        assertShortEquals(LOWEST_VALUE, FP16.max(NEGATIVE_INFINITY, LOWEST_VALUE));
-        assertShortEquals(POSITIVE_INFINITY, FP16.max(POSITIVE_INFINITY, MAX_VALUE));
-        assertShortEquals(MIN_NORMAL, FP16.max(MIN_VALUE, MIN_NORMAL));
-        assertShortEquals(MIN_VALUE, FP16.max(MIN_VALUE, POSITIVE_ZERO));
-        assertShortEquals(MIN_NORMAL, FP16.max(MIN_NORMAL, POSITIVE_ZERO));
-        assertShortEquals(toHalf(-3.453f), FP16.max(toHalf(-3.456f), toHalf(-3.453f)));
-        assertShortEquals(toHalf(3.456f), FP16.max(toHalf(3.456f), toHalf(3.453f)));
+        assertEquals(POSITIVE_INFINITY, FP16.max(POSITIVE_INFINITY, NEGATIVE_INFINITY));
+        assertEquals(POSITIVE_ZERO, FP16.max(POSITIVE_ZERO, NEGATIVE_ZERO));
+        assertEquals(NaN, FP16.max(NaN, MAX_VALUE));
+        assertEquals(NaN, FP16.max(MAX_VALUE, NaN));
+        assertEquals(LOWEST_VALUE, FP16.max(NEGATIVE_INFINITY, LOWEST_VALUE));
+        assertEquals(POSITIVE_INFINITY, FP16.max(POSITIVE_INFINITY, MAX_VALUE));
+        assertEquals(MIN_NORMAL, FP16.max(MIN_VALUE, MIN_NORMAL));
+        assertEquals(MIN_VALUE, FP16.max(MIN_VALUE, POSITIVE_ZERO));
+        assertEquals(MIN_NORMAL, FP16.max(MIN_NORMAL, POSITIVE_ZERO));
+        assertEquals(toHalf(-3.453f), FP16.max(toHalf(-3.456f), toHalf(-3.453f)));
+        assertEquals(toHalf(3.456f), FP16.max(toHalf(3.456f), toHalf(3.453f)));
     }
 
     public void testCompare() {
