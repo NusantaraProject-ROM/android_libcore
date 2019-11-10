@@ -1360,6 +1360,9 @@ filegroup {
 // any of these classes.
 filegroup {
     name: "openjdk_lambda_stub_files",
+    visibility: [
+        "//libcore:__subpackages__",
+    ],
     srcs: [
         "ojluni/src/lambda/java/java/lang/invoke/LambdaMetafactory.java",
         "ojluni/src/lambda/java/java/lang/invoke/SerializedLambda.java",
@@ -1384,6 +1387,9 @@ filegroup {
 // See http://b/123891440.
 filegroup {
     name: "openjdk_generated_annotation_stub_files",
+    visibility: [
+        "//libcore:__subpackages__",
+    ],
     srcs: [
         "ojluni/src/generated-annotation/java/javax/annotation/processing/Generated.java",
     ],
@@ -1829,6 +1835,7 @@ droidstubs {
     srcs: [":openjdk_javadoc_files"],
     installable: false,
     sdk_version: "none",
+    system_modules: "none",
     args: "--exclude-documentation-from-stubs",
 }
 
@@ -1844,6 +1851,7 @@ droidstubs {
     ],
     installable: false,
     sdk_version: "none",
+    system_modules: "none",
     args: "--exclude-documentation-from-stubs " +
         "--hide-annotation libcore.api.Hide ",
     merge_inclusion_annotations_dirs: ["ojluni-annotated-mmodule-stubs"],
