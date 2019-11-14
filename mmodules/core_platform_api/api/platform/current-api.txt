@@ -3,8 +3,8 @@ package android.compat {
 
   public final class Compatibility {
     method public static void clearOverrides();
-    method public static boolean isChangeEnabled(@android.compat.annotation.ChangeId long);
-    method public static void reportChange(@android.compat.annotation.ChangeId long);
+    method public static boolean isChangeEnabled(long);
+    method public static void reportChange(long);
     method public static void setCallbacks(android.compat.Compatibility.Callbacks);
     method public static void setOverrides(android.compat.Compatibility.ChangeConfig);
   }
@@ -24,20 +24,6 @@ package android.compat {
     method public boolean isEmpty();
     method public boolean isForceDisabled(long);
     method public boolean isForceEnabled(long);
-  }
-
-}
-
-package android.compat.annotation {
-
-  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD, java.lang.annotation.ElementType.PARAMETER}) public @interface ChangeId {
-  }
-
-  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD}) public @interface Disabled {
-  }
-
-  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD}) public @interface EnabledAfter {
-    method public abstract int targetSdkVersion();
   }
 
 }
@@ -970,7 +956,6 @@ package libcore.icu {
     method @dalvik.annotation.compat.UnsupportedAppUsage public static java.util.Locale addLikelySubtags(java.util.Locale);
     method @dalvik.annotation.compat.UnsupportedAppUsage public static String getBestDateTimePattern(String, java.util.Locale);
     method @dalvik.annotation.compat.UnsupportedAppUsage public static char[] getDateFormatOrder(String);
-    method public static String getTZDataVersion();
   }
 
   public final class LocaleData {
@@ -1138,6 +1123,23 @@ package libcore.timezone {
     method public java.util.List<java.lang.String> lookupAllCountryIsoCodes();
     method public libcore.timezone.CountryTimeZones lookupCountryTimeZones(String);
     method public java.util.List<libcore.timezone.CountryTimeZones> lookupCountryTimeZonesForZoneId(String);
+  }
+
+  public final class TelephonyLookup {
+    method public static libcore.timezone.TelephonyLookup createInstance(String) throws java.io.IOException;
+    method public static libcore.timezone.TelephonyLookup getInstance();
+    method public libcore.timezone.TelephonyNetworkFinder getTelephonyNetworkFinder();
+    method public void validate() throws java.io.IOException;
+  }
+
+  public class TelephonyNetwork {
+    method public String getCountryIsoCode();
+    method public int getMcc();
+    method public int getMnc();
+  }
+
+  public class TelephonyNetworkFinder {
+    method public libcore.timezone.TelephonyNetwork findNetworkByMccMnc(int, int);
   }
 
   public final class TimeZoneDataFiles {
