@@ -37,6 +37,7 @@ public class StandardRepositories {
     private final List<Repository> historicUpstreams;
     private final Repository openJdk8u121;
     private final Repository openJdk9b113;
+    private final Repository openJdk9p181;
     private final Repository openJdk7u40;
     private final OjluniRepository ojluni;
 
@@ -46,6 +47,7 @@ public class StandardRepositories {
         allUpstreams.add(openJdk9(upstreamRoot, "9+181"));
         this.openJdk9b113 = addAndReturn(allUpstreams, openJdk9(upstreamRoot, "9b113+"));
         this.openJdk8u121 = addAndReturn(allUpstreams, openJdkLegacy(upstreamRoot, "8u121-b13"));
+        this.openJdk9p181 = addAndReturn(allUpstreams, openJdk9(upstreamRoot, "9+181"));
         Repository openJdk8u60 = addAndReturn(allUpstreams, openJdkLegacy(upstreamRoot, "8u60"));
         this.openJdk7u40 = addAndReturn(allUpstreams, openJdkLegacy(upstreamRoot, "7u40"));
         this.allUpstreams = Collections.unmodifiableList(new ArrayList<>(allUpstreams));
@@ -109,9 +111,26 @@ public class StandardRepositories {
         return result;
     }
 
-    public Repository referenceUpstreamAsOfAndroidP(Path relPath) {
+    private static final Set<String> REL_PATHS_AT_OPENJDK9_181 = Collections.unmodifiableSet(
+            new HashSet<>(Arrays.asList(
+                    "java/util/concurrent/Flow.java",
+                    "java/util/AbstractList.java",
+                    "java/util/ImmutableCollections.java",
+                    "java/util/KeyValueHolder.java",
+                    "java/util/List.java",
+                    "java/util/Map.java",
+                    "java/util/Objects.java",
+                    "java/util/Set.java",
+                    "jdk/internal/HotSpotIntrinsicCandidate.java",
+                    "jdk/internal/vm/annotation/Stable.java",
+                    "jdk/internal/util/Preconditions.java"
+                    )));
+
+    public Repository referenceUpstream(Path relPath) {
         boolean isJsr166 = isJsr166(relPath);
-        if (isJsr166) {
+        if (REL_PATHS_AT_OPENJDK9_181.contains(relPath.toString())) {
+            return openJdk9p181;
+        } else if (isJsr166) {
             return openJdk9b113;
         } else if (relPath.startsWith("java/sql/") || relPath.startsWith("javax/sql/")) {
             return openJdk7u40;

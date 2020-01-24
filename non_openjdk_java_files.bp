@@ -49,6 +49,7 @@ filegroup {
         "dalvik/src/main/java/dalvik/system/RuntimeHooks.java",
         "dalvik/src/main/java/dalvik/system/SocketTagger.java",
         "dalvik/src/main/java/dalvik/system/TemporaryDirectory.java",
+        "dalvik/src/main/java/dalvik/system/ThreadPrioritySetter.java",
         "dalvik/src/main/java/dalvik/system/VMDebug.java",
         "dalvik/src/main/java/dalvik/system/ZygoteHooks.java",
         "dalvik/src/main/java/org/apache/harmony/dalvik/NativeTestTarget.java",
@@ -238,6 +239,7 @@ filegroup {
         "luni/src/main/java/libcore/icu/RelativeDateTimeFormatter.java",
         "luni/src/main/java/libcore/icu/TimeZoneNames.java",
         "luni/src/main/java/libcore/internal/StringPool.java",
+        "luni/src/main/java/libcore/io/AsynchronousCloseMonitor.java",
         "luni/src/main/java/libcore/io/ForwardingOs.java",
         "luni/src/main/java/libcore/io/IoBridge.java",
         "luni/src/main/java/libcore/io/IoUtils.java",
@@ -376,7 +378,6 @@ filegroup {
         "luni/src/main/java/libcore/icu/DateTimeFormat.java",
         "luni/src/main/java/libcore/icu/DateUtilsBridge.java",
         "luni/src/main/java/libcore/internal/Java9LanguageFeatures.java",
-        "luni/src/main/java/libcore/io/AsynchronousCloseMonitor.java",
         "luni/src/main/java/libcore/io/ClassPathURLStreamHandler.java",
         "luni/src/main/java/libcore/io/BlockGuardOs.java",
         "luni/src/main/java/libcore/io/BufferIterator.java",
@@ -446,6 +447,7 @@ filegroup {
     srcs: [
         "luni/src/main/java/libcore/api/CorePlatformApi.java",
         "luni/src/main/java/libcore/api/IntraCoreApi.java",
+        "luni/src/main/java/libcore/timezone/TimeZoneDataFiles.java",
         "luni/src/main/java/libcore/timezone/TzDataSetVersion.java",
     ],
 }
