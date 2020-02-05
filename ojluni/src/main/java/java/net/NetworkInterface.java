@@ -37,9 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import android.compat.annotation.ChangeId;
-import android.compat.Compatibility;
-import android.system.Os;
 import android.system.StructIfaddrs;
 import libcore.io.IoUtils;
 import libcore.io.Libcore;
@@ -50,6 +47,7 @@ import static android.system.OsConstants.*;
 
 // Android-note: NetworkInterface has been rewritten to avoid native code.
 // Fix upstream bug not returning link-down interfaces. http://b/26238832
+// Android-added: Document restrictions for targetSdkVersion > 29. http://b/141455849
 /**
  * This class represents a Network Interface made up of a name,
  * and a list of IP addresses assigned to this interface.
@@ -57,25 +55,16 @@ import static android.system.OsConstants.*;
  * is joined.
  *
  * Interfaces are normally known by names such as "le0".
+ * <p>
+ * <a name="access-restrictions"></a>Note that information about
+ * {@link NetworkInterface}s may be restricted. For example, non-system apps
+ * with {@code targetSdkVersion > 29} will only have access to information
+ * about {@link NetworkInterface}s that are associated with an
+ * {@link InetAddress}.
  *
  * @since 1.4
  */
 public final class NetworkInterface {
-    // BEGIN Android-added: Return anonymized device address to non-system processes.
-    /**
-     * Gates whether calls to {@link #getHardwareAddress()} made by non-system processes
-     * to return the actual MAC address (pre-change behavior) or an anonymized MAC address
-     * (post-change behavior). Future versions of Android will enforce the post-change
-     * behavior through SELinux.
-     */
-    @ChangeId
-    static final long ANONYMIZED_DEVICE_ADDRESS_CHANGE_ID = 141455849L;
-    // This is used instead of the own device MAC.
-    private static final byte[] ANONYMIZED_DEVICE_ADDRESS = {0x02, 0x00, 0x00, 0x00, 0x00, 0x00};
-    // First UID of non-system applications. See {@code android.os.Process.FIRST_APPLICATION_UID}.
-    private static final int FIRST_APPLICATION_UID = 10000;
-    // END Android-added: Return anonymized device address to non-system processes.
-
     private String name;
     private String displayName;
     private int index;
@@ -283,6 +272,7 @@ public final class NetworkInterface {
         return "".equals(displayName) ? null : displayName;
     }
 
+    // Android-added: Document restrictions for targetSdkVersion > 29. http://b/141455849
     /**
      * Searches for the network interface with the specified name.
      *
@@ -290,8 +280,9 @@ public final class NetworkInterface {
      *          The name of the network interface.
      *
      * @return  A {@code NetworkInterface} with the specified name,
-     *          or {@code null} if there is no network interface
-     *          with the specified name.
+     *          or {@code null} if the network interface with the specified
+     *          name does not exist or <a href="#access-restrictions">can't be
+     *          accessed</a>.
      *
      * @throws  SocketException
      *          If an I/O error occurs.
@@ -313,12 +304,14 @@ public final class NetworkInterface {
         return null;
     }
 
+    // Android-added: Document restrictions for targetSdkVersion > 29. http://b/141455849
     /**
      * Get a network interface given its index.
      *
      * @param index an integer, the index of the interface
      * @return the NetworkInterface obtained from its index, or {@code null} if
-     *         there is no interface with such an index on the system
+     *         an interface with the specified index does not exist or
+     *         <a href="#access-restrictions">can't be accessed</a>.
      * @throws  SocketException  if an I/O error occurs.
      * @throws  IllegalArgumentException if index has a negative value
      * @see #getIndex()
@@ -380,6 +373,7 @@ public final class NetworkInterface {
         return null;
     }
 
+    // Android-added: Document restrictions for targetSdkVersion > 29. http://b/141455849
     /**
      * Returns all the interfaces on this machine. The {@code Enumeration}
      * contains at least one element, possibly representing a loopback
@@ -388,20 +382,43 @@ public final class NetworkInterface {
      *
      * NOTE: can use getNetworkInterfaces()+getInetAddresses()
      *       to obtain all IP addresses for this node
+     * <p>
+     * For non-system apps with {@code targetSdkVersion > 29}, this
+     * method will only return information for {@link NetworkInterface}s that
+     * are associated with an {@link InetAddress}.
      *
      * @return an Enumeration of NetworkInterfaces found on this machine
+     *         that <a href="#access-restrictions">are accessible</a>.
      * @exception  SocketException  if an I/O error occurs.
      */
 
     public static Enumeration<NetworkInterface> getNetworkInterfaces()
         throws SocketException {
         final NetworkInterface[] netifs = getAll();
-
         // Android-changed: Rewrote NetworkInterface on top of Libcore.io.
-        // specified to return null if no network interfaces
+        // // specified to return null if no network interfaces
+        // if (netifs == null)
         if (netifs.length == 0)
             return null;
 
+        // Android-changed: Rewrote NetworkInterface on top of Libcore.io.
+        /*
+        return new Enumeration<NetworkInterface>() {
+            private int i = 0;
+            public NetworkInterface nextElement() {
+                if (netifs != null && i < netifs.length) {
+                    NetworkInterface netif = netifs[i++];
+                    return netif;
+                } else {
+                    throw new NoSuchElementException();
+                }
+            }
+
+            public boolean hasMoreElements() {
+                return (netifs != null && i < netifs.length);
+            }
+        };
+        */
         return Collections.enumeration(Arrays.asList(netifs));
     }
 
@@ -541,6 +558,7 @@ public final class NetworkInterface {
         return (getFlags() & IFF_MULTICAST) != 0;
     }
 
+    // Android-added: Document restrictions for targetSdkVersion > 29. http://b/141455849
     /**
      * Returns the hardware address (usually MAC) of the interface if it
      * has one and if it can be accessed given the current privileges.
@@ -550,7 +568,9 @@ public final class NetworkInterface {
      * @return  a byte array containing the address, or {@code null} if
      *          the address doesn't exist, is not accessible or a security
      *          manager is set and the caller does not have the permission
-     *          NetPermission("getNetworkInformation")
+     *          NetPermission("getNetworkInformation"). For example, this
+     *          method will generally return {@code null} when called by
+     *          non-system apps targeting API levels > 29.
      *
      * @exception       SocketException if an I/O error occurs.
      * @since 1.6
@@ -569,23 +589,8 @@ public final class NetworkInterface {
         if (ni == null) {
             throw new SocketException("NetworkInterface doesn't exist anymore");
         }
+        return ni.hardwareAddr;
         // END Android-changed: Fix upstream not returning link-down interfaces. http://b/26238832
-        // BEGIN Android-changed: Return anonymized device address to non-system processes.
-        if (!Compatibility.isChangeEnabled(ANONYMIZED_DEVICE_ADDRESS_CHANGE_ID)) {
-            return ni.hardwareAddr;
-        } else {
-            if (ni.hardwareAddr == null) {
-                // MAC address does not exist or is not accessible.
-                return null;
-            }
-            if (Os.getuid() < FIRST_APPLICATION_UID) {
-                // This is a system process. Return the actual MAC address.
-                return ni.hardwareAddr;
-            } else {
-                return ANONYMIZED_DEVICE_ADDRESS;
-            }
-        }
-        // END Android-changed: Return anonymized device address to non-system processes.
     }
 
     /**
