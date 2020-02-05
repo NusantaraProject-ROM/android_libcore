@@ -44,7 +44,6 @@ package android.system {
   public final class Os {
     method public static android.system.StructCapUserData[] capget(android.system.StructCapUserHeader) throws android.system.ErrnoException;
     method public static void capset(android.system.StructCapUserHeader, android.system.StructCapUserData[]) throws android.system.ErrnoException;
-    method public static int fcntlInt(java.io.FileDescriptor, int, int) throws android.system.ErrnoException;
     method public static int getpgid(int) throws android.system.ErrnoException;
     method public static android.system.StructRlimit getrlimit(int) throws android.system.ErrnoException;
     method public static int getsockoptInt(java.io.FileDescriptor, int, int) throws android.system.ErrnoException;
@@ -627,6 +626,8 @@ package dalvik.system {
   }
 
   public final class RuntimeHooks {
+    method @Nullable public static dalvik.system.ThreadPrioritySetter getThreadPrioritySetter();
+    method public static void setThreadPrioritySetter(@NonNull dalvik.system.ThreadPrioritySetter);
     method public static void setTimeZoneIdSupplier(java.util.function.Supplier<java.lang.String>);
     method public static void setUncaughtExceptionPreHandler(java.lang.Thread.UncaughtExceptionHandler);
   }
@@ -641,6 +642,10 @@ package dalvik.system {
     method public abstract void untag(java.io.FileDescriptor) throws java.net.SocketException;
     method public final void untag(java.net.Socket) throws java.net.SocketException;
     method public final void untag(java.net.DatagramSocket) throws java.net.SocketException;
+  }
+
+  @java.lang.FunctionalInterface public interface ThreadPrioritySetter {
+    method public void setPriority(int, int);
   }
 
   public final class VMDebug {
@@ -926,6 +931,14 @@ package javax.crypto {
 
 }
 
+package javax.net.ssl {
+
+  public abstract class HttpsURLConnection extends java.net.HttpURLConnection {
+    method public static javax.net.ssl.HostnameVerifier getStrictHostnameVerifier();
+  }
+
+}
+
 package libcore.content.type {
 
   public final class MimeMap {
@@ -1164,8 +1177,12 @@ package libcore.timezone {
     method public static int currentFormatMinorVersion();
     method public static boolean isCompatibleWithThisDevice(libcore.timezone.TzDataSetVersion);
     method public static libcore.timezone.TzDataSetVersion readFromFile(java.io.File) throws java.io.IOException, libcore.timezone.TzDataSetVersion.TzDataSetException;
+    method public static libcore.timezone.TzDataSetVersion readTimeZoneModuleVersion() throws java.io.IOException, libcore.timezone.TzDataSetVersion.TzDataSetException;
     method public byte[] toBytes();
     field public static final String DEFAULT_FILE_NAME = "tz_version";
+    field public final int formatMajorVersion;
+    field public final int formatMinorVersion;
+    field public final int revision;
     field public final String rulesVersion;
   }
 
@@ -1174,14 +1191,11 @@ package libcore.timezone {
     ctor public TzDataSetVersion.TzDataSetException(String, Throwable);
   }
 
-  public final class ZoneInfoDB {
-    method public static libcore.timezone.ZoneInfoDB.TzData getInstance();
-  }
-
-  public static class ZoneInfoDB.TzData implements java.lang.AutoCloseable {
+  public final class ZoneInfoDB implements java.lang.AutoCloseable {
+    method public static libcore.timezone.ZoneInfoDB getInstance();
     method public String getVersion();
     method public boolean hasTimeZone(String) throws java.io.IOException;
-    method public static libcore.timezone.ZoneInfoDB.TzData loadTzData(String);
+    method public static libcore.timezone.ZoneInfoDB loadTzData(String);
     method public libcore.util.ZoneInfo makeTimeZone(String) throws java.io.IOException;
     method public void validate() throws java.io.IOException;
   }

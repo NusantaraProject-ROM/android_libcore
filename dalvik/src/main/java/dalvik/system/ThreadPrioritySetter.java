@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 The Android Open Source Project
+ * Copyright (C) 2019 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-package libcore.io;
-
-import android.compat.annotation.UnsupportedAppUsage;
-import java.io.FileDescriptor;
-import libcore.api.IntraCoreApi;
+package dalvik.system;
 
 /**
- * Implements interruption of threads blocked in I/O system calls.
- *
+ * Interface for hooking to thread priority runtime setting
  * @hide
  */
-@IntraCoreApi
-public final class AsynchronousCloseMonitor {
-    private AsynchronousCloseMonitor() {
-    }
-
-    @UnsupportedAppUsage
-    @IntraCoreApi
-    public static native void signalBlockedThreads(FileDescriptor fd);
+@libcore.api.CorePlatformApi
+@FunctionalInterface
+public interface ThreadPrioritySetter {
+    @libcore.api.CorePlatformApi
+    void setPriority(int nativeTid, int priority);
 }
