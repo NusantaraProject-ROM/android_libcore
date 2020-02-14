@@ -629,7 +629,6 @@ java_test {
     ],
 
     static_libs: [
-        "archive-patcher",
         "core-compat-test-rules",
         "core-java-9-language-tests",
         "core-test-rules",
@@ -886,6 +885,7 @@ java_library {
 java_system_modules {
     name: "art-module-public-api-stubs-system-modules",
     visibility: [
+        "//art/build/sdk",
         "//external/conscrypt",
         "//external/icu/android_icu4j",
         "//external/wycheproof",
