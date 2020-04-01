@@ -223,7 +223,10 @@ java_library {
 
     installable: false,
 
-    plugins: ["compat-changeid-annotation-processor"],
+    plugins: [
+        "compat-changeid-annotation-processor",
+        "unsupportedappusage-annotation-processor",
+    ],
 }
 
 platform_compat_config {
@@ -379,6 +382,7 @@ java_library {
     sdk_version: "none",
     system_modules: "core-all-system-modules",
     patch_module: "java.base",
+    plugins: ["unsupportedappusage-annotation-processor"],
 }
 
 //
@@ -486,6 +490,7 @@ java_library_static {
     visibility: [
         "//art/build/sdk",
         "//external/conscrypt",
+        "//external/conscrypt/apex/tests",
         "//frameworks/base/location/tests/locationtests",
         "//frameworks/base/core/tests/coretests",
         "//frameworks/base/wifi/tests",
