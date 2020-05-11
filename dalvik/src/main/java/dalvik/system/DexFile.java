@@ -38,7 +38,6 @@ import libcore.io.Libcore;
  *     as {@link dalvik.system.PathClassLoader} instead. <b>This API will be removed
  *     in a future Android release</b>.
  */
-@libcore.api.CorePlatformApi
 @Deprecated
 public final class DexFile {
   /**
