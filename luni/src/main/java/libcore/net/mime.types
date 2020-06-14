@@ -532,6 +532,7 @@ audio/csound					csd orc sco
 audio/flac					flac
 audio/g.722.1
 audio/l16
+audio/mhas                                      mhas
 audio/midi					mid midi kar
 audio/mp4a-latm
 audio/mpa-robust
